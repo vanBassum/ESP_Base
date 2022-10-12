@@ -9,7 +9,7 @@ namespace ESP_Base
 	
 	class TimeSpan
 	{
-		time_t ticks = 0;
+		time_t ticks = 0;	//Ticks is in miliseconds!
 		
 	public:
 		
@@ -19,20 +19,22 @@ namespace ESP_Base
 			ticks = 0;
 		}
 		
-		TimeSpan(int64_t t)
+		TimeSpan(time_t miliseconds)
 		{
-			ticks = t;
+			ticks = miliseconds;
 		}
 
-		time_t GetSeconds() const { return ticks; }
-		time_t GetMinutes() const { return ticks / 60; }
-		time_t GetHours() const { return ticks / 3600; }
-		time_t GetDays() const { return ticks / 86400; }
+		time_t GetMiliSeconds() const { return ticks; }
+		time_t GetSeconds() const { return ticks / 1000; }
+		time_t GetMinutes() const { return ticks / 60000; }
+		time_t GetHours() const { return ticks / 3600000; }
+		time_t GetDays() const { return ticks / 86400000; }
 
-		static TimeSpan FromSeconds(const time_t value){ return TimeSpan(value); }
-		static TimeSpan FromMinutes(const time_t value){ return TimeSpan(value * 60); }
-		static TimeSpan FromHours(const time_t value){ return TimeSpan(value * 3600);	}
-		static TimeSpan FromDays(const time_t value){ return TimeSpan(value * 86400);	}
+		static TimeSpan FromMiliseconds(const time_t value){ return TimeSpan(value); }
+		static TimeSpan FromSeconds(const time_t value){ return TimeSpan(value * 1000); }
+		static TimeSpan FromMinutes(const time_t value){ return TimeSpan(value * 60000); }
+		static TimeSpan FromHours(const time_t value){ return TimeSpan(value * 3600000);	}
+		static TimeSpan FromDays(const time_t value){ return TimeSpan(value * 86400000);	}
 
 		friend bool operator==(TimeSpan const &lhs, TimeSpan const &rhs) { return lhs.ticks == rhs.ticks; }
 		friend bool operator!=(TimeSpan const &lhs, TimeSpan const &rhs) { return lhs.ticks != rhs.ticks; }
