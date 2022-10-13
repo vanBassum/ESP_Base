@@ -12,16 +12,17 @@ namespace ESP_Base
 {
 	class Task
 	{
+		void* arg;
 		std::string name = "New task";
 		portBASE_TYPE priority = 0;
 		portSHORT stackDepth = configMINIMAL_STACK_SIZE;
 		xTaskHandle taskHandle = NULL;
-		Action<Task&> callback;
+		Action<Task&, void*> callback;
 		
 		static void TaskFunction(void* parm)
 		{
 			Task* t = static_cast<Task*>(parm);
-			t->callback.Invoke(*t);
+			t->callback.Invoke(*t, t->arg);
 			t->taskHandle = NULL;	
 			vTaskDelete(NULL);
 		}
@@ -54,15 +55,16 @@ namespace ESP_Base
 			callback.Bind(instance, mp);
 		}
 
-		void Bind(void(*fp)(Task&))
+		void Bind(void(*fp)(Task&, void*))
 		{
 			callback.Bind(fp);
 		}
 		
-		void Run()
+		void Run(void* arg = NULL)
 		{
 			if (taskHandle != NULL)
 				vTaskDelete(taskHandle);
+			this->arg = arg;
 			xTaskCreate(&TaskFunction, name.c_str(), stackDepth, this, priority, &taskHandle);
 		}
 		
