@@ -11,17 +11,17 @@ namespace ESP_Base
 	
 	class DateTime
 	{
-		time_t ticks = 0;	//Ticks is in miliseconds!
+		time_t seconds = 0;
 		
 	public:
 		DateTime()
 		{
-			this->ticks = 0;
+			this->seconds = 0;
 		}
 
 		DateTime(time_t ticks)
 		{
-			this->ticks = ticks;
+			this->seconds = ticks;
 		}
 		
 
@@ -30,14 +30,14 @@ namespace ESP_Base
 			struct tm result;
 			if (strptime(datetime.c_str(), format.c_str(), &result))
 			{
-				ticks = mktime(&result) * 1000;
+				seconds = mktime(&result);
 			}
 		}
 		
 		static DateTime Now()
 		{
 			DateTime dt;
-			dt.ticks = time(NULL) * 1000;
+			dt.seconds = time(NULL);
 			return dt;
 		}
 
@@ -47,7 +47,7 @@ namespace ESP_Base
 			struct tm t;
 			if (strptime(datetime.c_str(), "%FT%TZ", &t))
 			{
-				result.ticks = mktime(&t) * 1000;
+				result.seconds = mktime(&t);
 			}
 			return result;
 		}
@@ -56,7 +56,7 @@ namespace ESP_Base
 		std::string ToString() const
 		{
 			char buf[sizeof "2011-10-08T07:07:09+0100" + 1];
-			time_t t = ticks / 1000;
+			time_t t = seconds;
 			strftime(buf, sizeof buf, "%FT%T%z", localtime(&t));
 			buf[25] = '\0';
 			buf[24] = buf[23];
@@ -66,27 +66,27 @@ namespace ESP_Base
 		}
 
 		
-		friend bool operator==(DateTime const &lhs, DateTime const &rhs) { return lhs.ticks == rhs.ticks; }
-		friend bool operator!=(DateTime const &lhs, DateTime const &rhs) { return lhs.ticks != rhs.ticks; }
-		friend bool operator <(DateTime const &lhs, DateTime const &rhs) { return lhs.ticks  < rhs.ticks; }
-		friend bool operator >(DateTime const &lhs, DateTime const &rhs) { return lhs.ticks  > rhs.ticks; }
-		friend bool operator<=(DateTime const &lhs, DateTime const &rhs) { return lhs.ticks <= rhs.ticks; }
-		friend bool operator>=(DateTime const &lhs, DateTime const &rhs) { return lhs.ticks >= rhs.ticks; }
+		friend bool operator==(DateTime const &lhs, DateTime const &rhs) { return lhs.seconds == rhs.seconds; }
+		friend bool operator!=(DateTime const &lhs, DateTime const &rhs) { return lhs.seconds != rhs.seconds; }
+		friend bool operator <(DateTime const &lhs, DateTime const &rhs) { return lhs.seconds  < rhs.seconds; }
+		friend bool operator >(DateTime const &lhs, DateTime const &rhs) { return lhs.seconds  > rhs.seconds; }
+		friend bool operator<=(DateTime const &lhs, DateTime const &rhs) { return lhs.seconds <= rhs.seconds; }
+		friend bool operator>=(DateTime const &lhs, DateTime const &rhs) { return lhs.seconds >= rhs.seconds; }
 
-		friend DateTime operator-(DateTime const &lhs, TimeSpan const &rhs) { return DateTime(lhs.ticks - rhs.GetSeconds()); }
-		friend DateTime operator+(DateTime const &lhs, TimeSpan const &rhs) { return DateTime(lhs.ticks + rhs.GetSeconds()); }
+		//friend DateTime operator-(DateTime const &lhs, TimeSpan const &rhs) { return DateTime(lhs.seconds - rhs.GetSeconds()); }
+		//friend DateTime operator+(DateTime const &lhs, TimeSpan const &rhs) { return DateTime(lhs.seconds + rhs.GetSeconds()); }
 		
-		DateTime& operator+=(TimeSpan const &rhs) 
-		{ 
-			this->ticks += rhs.GetSeconds();
-			return *this; 
-		}
-		
-		DateTime& operator-=(TimeSpan const &rhs) 
-		{ 
-			this->ticks -= rhs.GetSeconds();
-			return *this; 
-		}
+		//DateTime& operator+=(TimeSpan const &rhs) 
+		//{ 
+		//	this->seconds += rhs.GetSeconds();
+		//	return *this; 
+		//}
+		//
+		//DateTime& operator-=(TimeSpan const &rhs) 
+		//{ 
+		//	this->seconds -= rhs.GetSeconds();
+		//	return *this; 
+		//}
 	};
 	
 	
