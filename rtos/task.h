@@ -50,7 +50,7 @@ namespace ESP_Base
 		}
 		
 		template<typename T>
-		void Bind(T* instance, void(T::* mp)(Task&))
+			void Bind(T* instance, void(T::* mp)(Task&, void*))
 		{
 			callback.Bind(instance, mp);
 		}

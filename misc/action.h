@@ -3,8 +3,6 @@
 
 namespace ESP_Base
 {
-	
-	
 	template<typename ...Args>
 		class ActionHandler
 		{
@@ -70,26 +68,21 @@ namespace ESP_Base
 			template<typename T>
 				void Bind(T* instance, void(T::*method)(Args...))
 				{
-					if (IsBound())
+					if (action != NULL)
 						delete action;
 					action = new ActionHandlerMethod<T, Args...>(instance, method);
 				}
 
 			void Bind(void(*func)(Args...))
 			{
-				if (IsBound())
+				if (action != NULL)
 					delete action;
 				action = new ActionHandlerFunction<Args...>(func);
 			}
 
-			bool IsBound()
-			{
-				return action != NULL;
-			}
-
 			void Invoke(Args... args)
 			{
-				if (IsBound())
+				if (action != NULL)
 					action->Invoke(args...);
 			}
 		};
