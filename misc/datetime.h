@@ -4,7 +4,7 @@
 #include <ctime>
 
 #include "timespan.h"
-
+#include "string.h"
 
 namespace ESP_Base
 {
@@ -19,13 +19,13 @@ namespace ESP_Base
 			this->seconds = 0;
 		}
 
-		DateTime(time_t ticks)
+		void Set(time_t ticks)
 		{
-			this->seconds = ticks;
+			seconds = ticks;
 		}
 		
 
-		DateTime(std::string datetime, std::string format)
+		void Set(std::string datetime, std::string format = "%FT%TZ")
 		{
 			struct tm result;
 			if (strptime(datetime.c_str(), format.c_str(), &result))
@@ -34,24 +34,26 @@ namespace ESP_Base
 			}
 		}
 		
+		void Set(struct tm * timeptr)
+		{
+			seconds = mktime(timeptr);
+		}
+		
+		
+		void Get(struct tm * timeptr)
+		{
+			struct tm *val = localtime(&seconds);
+			memcpy(timeptr, val, sizeof(struct tm));
+		}
+		
+		
+		
 		static DateTime Now()
 		{
 			DateTime dt;
 			dt.seconds = time(NULL);
 			return dt;
-		}
-
-		static DateTime Parse(const std::string datetime)
-		{
-			DateTime result;
-			struct tm t;
-			if (strptime(datetime.c_str(), "%FT%TZ", &t))
-			{
-				result.seconds = mktime(&t);
-			}
-			return result;
-		}
-		
+		}	
 
 		std::string ToString() const
 		{
