@@ -6,23 +6,9 @@
 
 namespace ESP_Base
 {
-	
-
-	
-
-	class ISettings : public IcJSON
-	{
-	public:
-		
-		virtual void LoadDefault() = 0;
-		
-	};
-	
-
-
 	class ISetting;
 	
-	class BaseSettings : public ISettings
+	class BaseSettings : public IcJSON
 	{
 		std::vector<ISetting*> settings;
 	protected:
@@ -35,7 +21,6 @@ namespace ESP_Base
 		friend ISetting;
 		
 	public:		
-		virtual void LoadDefault() override;
 		virtual cJSON* ToJSON() override;
 		virtual bool TryParse(cJSON *json) override;
 		esp_err_t LoadNVS(const char* nSpace);

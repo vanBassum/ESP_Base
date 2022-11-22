@@ -1,9 +1,6 @@
 #include "settings.h"
 #include "nvs_flash.h"
 
-void ESP_Base::BaseSettings::LoadDefault()
-{
-}
 
 esp_err_t ESP_Base::BaseSettings::LoadNVS(const char* nspace)
 {
