@@ -7,7 +7,10 @@
 #include "string.h"
 #include "esp_log.h"
 
-#define DEFAULTFORMAT "%Y-%m-%dT%H:%M:%S%z"
+#include <time.h>
+
+//https://github.com/espressif/esp-idf/issues/2219
+#define DEFAULTFORMAT "%Y-%m-%dT%H:%M:%S"
 
 namespace ESP_Base
 {
@@ -15,7 +18,7 @@ namespace ESP_Base
 	class DateTime
 	{
 		time_t seconds = 0;
-		
+
 	public:
 		DateTime()
 		{
@@ -26,7 +29,7 @@ namespace ESP_Base
 		{
 			seconds = ticks;
 		}
-		
+
 
 		void Set(std::string datetime, std::string format = DEFAULTFORMAT)
 		{
@@ -36,27 +39,25 @@ namespace ESP_Base
 				seconds = mktime(&result);
 			}
 		}
-		
-		void Set(struct tm * timeptr)
+
+		void Set(struct tm* timeptr)
 		{
 			seconds = mktime(timeptr);
 		}
-		
-		
-		void Get(struct tm * timeptr)
+
+
+		void Get(struct tm* timeptr)
 		{
 			struct tm *val = localtime(&seconds);
 			memcpy(timeptr, val, sizeof(struct tm));
 		}
-		
-		
-		
+
 		static DateTime Now()
 		{
 			DateTime dt;
 			dt.seconds = time(NULL);
 			return dt;
-		}	
+		}
 
 		std::string ToString(std::string format = DEFAULTFORMAT) const
 		{
