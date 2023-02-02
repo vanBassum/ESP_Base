@@ -51,6 +51,12 @@ namespace ESP_Base
 			struct tm *val = localtime(&seconds);
 			memcpy(timeptr, val, sizeof(struct tm));
 		}
+		
+		void Get(struct timeval* now)
+		{
+			now->tv_sec = seconds;
+			now->tv_usec = 0;
+		}
 
 		static DateTime Now()
 		{
@@ -67,7 +73,6 @@ namespace ESP_Base
 			buf[sizeof("2011-10-08T07:07:09+0100")] = '\0';
 			return buf;
 		}
-		
 
 	
 		friend bool operator==(DateTime const &lhs, DateTime const &rhs) { return lhs.seconds == rhs.seconds; }
