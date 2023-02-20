@@ -16,7 +16,7 @@ namespace ESP_Base
 		std::string name = "New task";
 		portBASE_TYPE priority = 0;
 		portSHORT stackDepth = configMINIMAL_STACK_SIZE;
-		xTaskHandle taskHandle = NULL;
+		TaskHandle_t taskHandle = NULL;
 		Action<Task&, void*> callback;
 		
 		static void TaskFunction(void* parm)
