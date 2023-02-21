@@ -2,5 +2,5 @@
 
 idf_component_register(
 						SRCS "esp_base.cpp" "settings/settings.cpp"
-						INCLUDE_DIRS "." "misc" "rtos" "settings"
+						INCLUDE_DIRS "." "misc" "rtos" "settings" "interfaces"
 						REQUIRES json nvs_flash)
