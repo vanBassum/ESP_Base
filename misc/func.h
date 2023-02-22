@@ -37,7 +37,7 @@ namespace ESP_Base
 	
 	
 	template<typename R, typename ...Args>
-		class FuncHandlerFunction : public FuncHandler<Args...>
+		class FuncHandlerFunction : public FuncHandler<R, Args...>
 		{
 		private:
 			R(*func)(Args...);
@@ -57,43 +57,43 @@ namespace ESP_Base
 	template<typename R, typename ...Args>
 		class Func
 		{
-			FuncHandler<R, Args...> *func = NULL;
+			FuncHandler<R, Args...> *funcHandler = NULL;
 			
 		public:
 			virtual ~Func()
 			{
-				if (func != NULL)
-					delete func;
+				if (funcHandler != NULL)
+					delete funcHandler;
 			}
 		
 			template<typename T>
 				void Bind(T* instance, R(T::*method)(Args...))
 				{
-					if (func != NULL)
-						delete func;
+					if (funcHandler != NULL)
+						delete funcHandler;
 					
 					FuncHandlerMethod<R, T, Args...>* handler = new FuncHandlerMethod<R, T, Args...>();
 					handler->Bind(instance, method);
-					func = handler;
+					funcHandler = handler;
 				}
 
 			void Bind(R(*func)(Args...))
 			{
-				if (func != NULL)
-					delete func;
-				FuncHandlerFunction<Args...> *handler = new FuncHandlerFunction<Args...>();
+				if (funcHandler != NULL)
+					delete funcHandler;
+				FuncHandlerFunction<R, Args...> *handler = new FuncHandlerFunction<R, Args...>();
 				handler->Bind(func);
-				func = handler;
+				funcHandler = handler;
 			}
 
 			R Invoke(Args... args)
 			{
-				return func->Invoke(args...);
+				return funcHandler->Invoke(args...);
 			}
 			
 			bool IsBound()
 			{
-				return func != NULL;
+				return funcHandler != NULL;
 			}
 		};
 }
