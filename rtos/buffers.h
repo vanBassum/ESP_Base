@@ -45,23 +45,13 @@ namespace ESP_Base
 		
 		size_t Read(void* data, size_t size) override
 		{
-			if (handle == NULL) 
-			{
-				ESP_LOGE("StreamBuffer", "Buffer not initialized! blocking task");
-				vTaskDelay(portMAX_DELAY);
-				return 0;
-			}
+			if (handle == NULL) return 0;
 			return xStreamBufferReceive(handle, data, size, portMAX_DELAY);
 		}
 		
 		size_t Write(const void* data, size_t size) override
 		{
-			if (handle == NULL) 
-			{
-				ESP_LOGE("StreamBuffer", "Buffer not initialized! blocking task");
-				vTaskDelay(portMAX_DELAY);
-				return 0;
-			}
+			if (handle == NULL) return 0;
 			size_t result = xStreamBufferSend(handle, data, size, portMAX_DELAY);
 			OnWritten.Invoke(this);
 			return result;
