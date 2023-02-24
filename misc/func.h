@@ -15,7 +15,7 @@ namespace ESP_Base
 	
 	
 	template<typename R, typename T, typename ...Args>
-		class FuncHandlerMethod : public FuncHandler<Args...>
+		class FuncHandlerMethod : public FuncHandler<R, Args...>
 		{
 		private:
 			R(T::*method)(Args...);
