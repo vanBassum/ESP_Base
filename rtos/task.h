@@ -17,12 +17,12 @@ namespace ESP_Base
 		portBASE_TYPE priority = 0;
 		portSHORT stackDepth = configMINIMAL_STACK_SIZE;
 		TaskHandle_t taskHandle = NULL;
-		Action<Task&, void*> callback;
+		Action<Task*, void*> callback;
 		
 		static void TaskFunction(void* parm)
 		{
 			Task* t = static_cast<Task*>(parm);
-			t->callback.Invoke(*t, t->arg);
+			t->callback.Invoke(t, t->arg);
 			t->taskHandle = NULL;	
 			vTaskDelete(NULL);
 		}
@@ -50,12 +50,12 @@ namespace ESP_Base
 		}
 		
 		template<typename T>
-			void Bind(T* instance, void(T::* mp)(Task&, void*))
+			void Bind(T* instance, void(T::* mp)(Task*, void*))
 		{
 			callback.Bind(instance, mp);
 		}
 
-		void Bind(void(*fp)(Task&, void*))
+		void Bind(void(*fp)(Task*, void*))
 		{
 			callback.Bind(fp);
 		}

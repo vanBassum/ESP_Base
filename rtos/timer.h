@@ -9,13 +9,13 @@ namespace ESP_Base
 {
 	class Timer
 	{
-		Action<Timer&> callback;
+		Action<Timer*> callback;
 		TimerHandle_t xTimer = NULL;
 		
 		static void tCallback(TimerHandle_t xTimer)
 		{
 			Timer* t = static_cast<Timer*>(pvTimerGetTimerID(xTimer));
-			t->callback.Invoke(*t);
+			t->callback.Invoke(t);
 		}
 		
 	public:
@@ -32,12 +32,12 @@ namespace ESP_Base
 		}
 		
 		template<typename T>
-			void Bind(T* instance, void(T::* mp)(Timer&))
+			void Bind(T* instance, void(T::* mp)(Timer*))
 		{
 			callback.Bind(instance, mp);
 		}
 
-		void Bind(void(*fp)(Timer&))
+		void Bind(void(*fp)(Timer*))
 		{
 			callback.Bind(fp);
 		}

@@ -12,11 +12,7 @@ namespace ESP_Base
 	{
 		StreamBufferHandle_t handle = NULL;
 		
-	public:
-		
-		//Event after bytes have been written to the queue, Use to set task notifications.
-		Event<StreamBuffer*> OnWritten;
-		
+	public:	
 		~StreamBuffer()
 		{
 			if (handle != NULL)
@@ -53,7 +49,7 @@ namespace ESP_Base
 		{
 			if (handle == NULL) return 0;
 			size_t result = xStreamBufferSend(handle, data, size, portMAX_DELAY);
-			OnWritten.Invoke(this);
+			OnDataReady.Invoke(this);
 			return result;
 		}
 	};
