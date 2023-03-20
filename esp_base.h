@@ -12,7 +12,7 @@
 #include "rtos/recursivemutex.h"
 #include "rtos/timer.h"
 #include "rtos/semaphore.h"
-#include "rtos/buffers.h"
-
+#include "rtos/streambuffer.h"
+#include "rtos/queue.h"
 
 
