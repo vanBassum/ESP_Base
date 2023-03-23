@@ -9,6 +9,7 @@
 
 namespace ESP_Base
 {
+	/*
 	template<typename T>
 	class Queue
 	{
@@ -51,7 +52,7 @@ namespace ESP_Base
 		}
 		
 	};
-
+*/
 }
 
 
