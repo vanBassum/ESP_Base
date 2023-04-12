@@ -1,14 +1,6 @@
 #pragma once
 
-#include "callback/action.h"
-#include "callback/func.h"
-#include "callback/event.h"
-
-#include "time/datetime.h"
-#include "time/timespan.h"
-
-#include "helpers/enum.h"
-#include "helpers/marcro.h"
-
-
-
+#include "esp_base.h"
+#include "callback/callback.h"
+#include "helpers/helpers.h"
+#include "time/time.h"
