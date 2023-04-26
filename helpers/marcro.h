@@ -2,7 +2,7 @@
 #include "esp_log.h"
 	    
 #define INIT_OR_RETURN(_TAG_, _MESSAGE_, FUNC)do {													\
-		bool result = FUNC;																			\
+		bool result = (FUNC);																			\
 		if (result)																					\
 			ESP_LOGI(_TAG_, "%-64s Initialized", _MESSAGE_);										\
 		else {																						\
@@ -13,7 +13,7 @@
 	    
 	    
 #define INIT_AND_CONTINUE(_TAG_, _MESSAGE_, FUNC)do {												\
-		bool result = FUNC;																			\
+		bool result = (FUNC);																			\
 		if (result)																					\
 			ESP_LOGI(_TAG_, "%-64s Initialized", _MESSAGE_);										\
 		else {																						\
