@@ -5,7 +5,7 @@ idf_component_register(
 		esp_base.cpp
 	INCLUDE_DIRS
 		.
-		callback
+		callbacks
 		helpers
 		mtime
 						REQUIRES json nvs_flash)
