@@ -40,33 +40,40 @@ public:
 		auto t = mktime(timeptr);
 		seconds = t + (mktime(localtime(&t)) - mktime(gmtime(&t)));
 	}
-	
-	void GetAsUTC(struct timeval* now)
-	{
-		now->tv_sec = seconds;
-		now->tv_usec = 0;
-	}
-	
 	void GetAsUTC(struct tm* timeptr)
 	{
 		struct tm *val = gmtime(&seconds);			
 		memcpy(timeptr, val, sizeof(struct tm));
 	}
 	
-	/* ---------------------- *
-	 * Local time
-	 * ---------------------- */
-	
-	
-	void SetFromLocalTime(std::string datetime, std::string format = DEFAULTFORMAT)
+	void GetAsUTC(struct timeval* now)
+	{
+		now->tv_sec = seconds;
+		now->tv_usec = 0;
+	}
+		
+	void SetFromUTC(std::string datetime, std::string format = DEFAULTFORMAT)
 	{
 		struct tm result;
 		if (strptime(datetime.c_str(), format.c_str(), &result))
 		{
-			SetFromLocalTime(&result);
+			SetFromUTC(&result);
 		}
 	}
-
+	
+	std::string GetAsUTCString(std::string format = DEFAULTFORMAT) const
+	{
+		char buf[sizeof("2011-10-08T07:07:09+0100") + 1];
+		time_t t = seconds;
+		strftime(buf, sizeof buf, format.c_str(), gmtime(&t));
+		buf[sizeof("2011-10-08T07:07:09+0100")] = '\0';
+		return buf;
+	}
+	
+	/* ---------------------- *
+	 * Local time
+	 * ---------------------- */
+	
 	
 	void SetFromLocalTime(struct tm* timeptr)
 	{
@@ -77,6 +84,15 @@ public:
 	{
 		struct tm *val = localtime(&seconds);
 		memcpy(timeptr, val, sizeof(struct tm));
+	}
+	
+	void SetFromLocalTime(std::string datetime, std::string format = DEFAULTFORMAT)
+	{
+		struct tm result;
+		if (strptime(datetime.c_str(), format.c_str(), &result))
+		{
+			SetFromLocalTime(&result);
+		}
 	}
 	
 	std::string GetAsLocalTimeString(std::string format = DEFAULTFORMAT) const
