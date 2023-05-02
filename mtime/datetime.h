@@ -16,6 +16,7 @@
 	
 class DateTime
 {
+	
 	time_t seconds = 0;
 
 public:
@@ -24,47 +25,61 @@ public:
 		this->seconds = 0;
 	}
 
-	void Set(time_t ticks)
+	/* ---------------------- *
+	 * UTC time
+	 * ---------------------- */
+	
+	void SetFromUTC(time_t ticks)
 	{
 		seconds = ticks;
 	}
-
-
-	void Set(std::string datetime, std::string format = DEFAULTFORMAT)
+	
+	//https://stackoverflow.com/questions/38298261/why-there-is-no-inverse-function-for-gmtime-in-libc
+	void SetFromUTC(struct tm* timeptr)
 	{
-		struct tm result;
-		if (strptime(datetime.c_str(), format.c_str(), &result))
-		{
-			seconds = mktime(&result);
-		}
+		auto t = mktime(timeptr);
+		seconds = t + (mktime(localtime(&t)) - mktime(gmtime(&t)));
 	}
-
-	void Set(struct tm* timeptr)
-	{
-		seconds = mktime(timeptr);
-	}
-
-
-	void Get(struct tm* timeptr)
-	{
-		struct tm *val = localtime(&seconds);
-		memcpy(timeptr, val, sizeof(struct tm));
-	}
-		
-	void Get(struct timeval* now)
+	
+	void GetAsUTC(struct timeval* now)
 	{
 		now->tv_sec = seconds;
 		now->tv_usec = 0;
 	}
-
-	static DateTime Now()
+	
+	void GetAsUTC(struct tm* timeptr)
 	{
-		DateTime dt;
-		dt.seconds = time(NULL);
-		return dt;
+		struct tm *val = gmtime(&seconds);			
+		memcpy(timeptr, val, sizeof(struct tm));
+	}
+	
+	/* ---------------------- *
+	 * Local time
+	 * ---------------------- */
+	
+	
+	void SetFromLocalTime(std::string datetime, std::string format = DEFAULTFORMAT)
+	{
+		struct tm result;
+		if (strptime(datetime.c_str(), format.c_str(), &result))
+		{
+			SetFromLocalTime(&result);
+		}
 	}
 
-	std::string ToString(std::string format = DEFAULTFORMAT) const
+	
+	void SetFromLocalTime(struct tm* timeptr)
+	{
+		seconds = mktime(timeptr);
+	}
+
+	void GetAsLocalTime(struct tm* timeptr)
+	{
+		struct tm *val = localtime(&seconds);
+		memcpy(timeptr, val, sizeof(struct tm));
+	}
+	
+	std::string GetAsLocalTimeString(std::string format = DEFAULTFORMAT) const
 	{
 		char buf[sizeof("2011-10-08T07:07:09+0100") + 1];
 		time_t t = seconds;
@@ -72,7 +87,17 @@ public:
 		buf[sizeof("2011-10-08T07:07:09+0100")] = '\0';
 		return buf;
 	}
-
+	
+	
+	/* ---------------------- *
+	 * Statics and operators
+	 * ---------------------- */
+	static DateTime Now()
+	{
+		DateTime dt;
+		dt.seconds = time(NULL);
+		return dt;
+	}
 	
 	friend bool operator==(DateTime const &lhs, DateTime const &rhs) { return lhs.seconds == rhs.seconds; }
 	friend bool operator!=(DateTime const &lhs, DateTime const &rhs) { return lhs.seconds != rhs.seconds; }
