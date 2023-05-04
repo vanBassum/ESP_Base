@@ -8,4 +8,5 @@ idf_component_register(
 		callbacks
 		helpers
 		mtime
+		settings
 						REQUIRES json nvs_flash)

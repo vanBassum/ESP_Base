@@ -5,3 +5,4 @@
 #include "callbacks/callbacks.h"
 #include "helpers/helpers.h"
 #include "mtime/mtime.h"
+#include "settings/settings.h"
