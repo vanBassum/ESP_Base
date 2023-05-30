@@ -7,5 +7,6 @@ idf_component_register(
 		.
 		callbacks
 		helpers
+		interfaces
 		mtime
 						REQUIRES json nvs_flash)

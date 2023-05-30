@@ -4,4 +4,5 @@
 
 #include "callbacks/callbacks.h"
 #include "helpers/helpers.h"
+#include "interfaces/interfaces.h"
 #include "mtime/mtime.h"
