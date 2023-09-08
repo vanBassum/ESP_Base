@@ -1,53 +1,59 @@
 #pragma once
-#include "esp_system.h"
+#include <iostream>
 #include <vector>
-#include "action.h"
+#include <functional>
+#include "esp_log.h"
 
 
-template<typename ...Args>
-	class Event
-	{
-		std::vector<ActionHandler<Args...>*> *actions = NULL;
-	public:
-		virtual ~Event()
-		{
-			if (actions != NULL)
-			{
-				int size = actions->size();
-				for (int i = 0;i < size; i++)
-					delete (*actions)[i];
-				delete actions;
-			}
-		}
-		
-		template<typename T>
-			void Bind(T* instance, void(T::*method)(Args...))
-			{
-				if (actions == NULL)
-					actions = new std::vector<ActionHandler<Args...> *>();
-					
-				ActionHandlerMethod<T, Args...>* handler = new ActionHandlerMethod<T, Args...>();
-				handler->Bind(instance, method);					
-				actions->push_back(handler);
-			}
+template <typename SenderType, typename DataType = void*>  // Add DataType with a default value
+class Event {
+	typedef std::function<void(SenderType*, const DataType&)> Handler;
+	std::vector<Handler> handlers;
 
-		void Bind(void(*func)(Args...))
-		{
-			if (actions == NULL)
-				actions = new std::vector<ActionHandler<Args...> *>();
-				
-			ActionHandlerFunction<Args...>* handler = new ActionHandlerFunction<Args...>();
-			handler->Bind(func);
-			actions->push_back(handler);
+	template<typename T, typename... U>
+		size_t getAddress(std::function<T(U...)> f) {
+			typedef T(fnType)(U...);
+			fnType ** fnPointer = f.template target<fnType*>();
+			return (size_t) *fnPointer;
 		}
 
-		void Invoke(Args... args)
-		{
-			if (actions != NULL)
-			{
-				int size = actions->size();
-				for (int i = 0;i < size; i++)
-					(*actions)[i]->Invoke(args...);
+	bool Compare(const Handler& a, const Handler& b) {
+		// Check if both functions are not empty
+		if (a && b) {
+			// Use target() to access the stored function objects
+			size_t targetA = getAddress(a);
+			size_t targetB = getAddress(b);
+
+			// Check if the targets are not null and match
+			if (targetA && targetB && targetA == targetB) {
+				return true;
 			}
 		}
-	};
+		return false;
+	}
+
+public:
+	void AddHandler(const Handler& handler) {
+		handlers.push_back(handler);
+	}
+
+	void RemoveHandler(const Handler& handler) {
+		auto it = std::remove_if(handlers.begin(),
+			handlers.end(),
+			[this, &handler](const Handler& storedHandler) {
+				return Compare(handler, storedHandler);
+			});
+
+		handlers.erase(it, handlers.end());
+	}
+
+	void Invoke(SenderType* sender, const DataType& data) {
+		for (const auto& handler : handlers) {
+			if (handler)
+			{
+				// Check if the handler is valid before invoking
+				handler(sender, data);
+			}
+		}
+	}
+};
