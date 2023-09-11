@@ -20,6 +20,12 @@ public:
 	{
 		this->miliseconds = miliseconds;
 	}
+	
+	time_t GetTotalMiliSeconds() const { return miliseconds ; }
+	time_t GetTotalSeconds() const { return (miliseconds / 1000) ; }
+	time_t GetTotalMinutes() const { return (miliseconds / 60000) ; }
+	time_t GetTotalHours() const { return (miliseconds /  3600000) ; }
+	time_t GetTotalDays() const { return (miliseconds / 86400000) ; }
 
 	time_t GetMiliSeconds() const { return miliseconds % 1000; }
 	time_t GetSeconds() const { return (miliseconds / 1000) % 60; }
