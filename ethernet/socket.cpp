@@ -35,6 +35,7 @@ void Socket::SetKeepAlive(int enable, int idle, int interval, int count)
 	setsockopt(handle, IPPROTO_TCP, TCP_KEEPIDLE, &idle, sizeof(int));
 	setsockopt(handle, IPPROTO_TCP, TCP_KEEPINTVL, &interval, sizeof(int));
 	setsockopt(handle, IPPROTO_TCP, TCP_KEEPCNT, &count, sizeof(int));
+	// setsockopt(handle, IPPROTO_TCP, TCP_NODELAY, &count, sizeof(int));
 }
 
 int Socket::Receive(void* buffer, size_t size, int flags /* = 0 */)
