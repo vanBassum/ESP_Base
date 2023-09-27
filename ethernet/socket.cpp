@@ -70,10 +70,10 @@ int Socket::Send(const void* buffer, size_t size, int flags /* = 0 */)
 	return size;
 }
 
-int Socket::SendTo(Endpoint* endpoint, const void* buffer, size_t size, int flags /* = 0 */)
+int Socket::SendTo(const Endpoint& endpoint, const void* buffer, size_t size, int flags /* = 0 */)
 {
 	if (handle < 0) return 0;
-	int send = sendto(handle, buffer, size, flags, endpoint->GetSockAddr(), endpoint->Size());
+	int send = sendto(handle, buffer, size, flags, endpoint.GetSockAddr(), endpoint.Size());
 	if (send < 0) {
 		ESP_LOGE(TAG, "Error occurred during sending: errno %d, %s", errno, strerror(errno));
 		return send;
@@ -83,9 +83,9 @@ int Socket::SendTo(Endpoint* endpoint, const void* buffer, size_t size, int flag
 
 
 
-bool Socket::Connect(Endpoint* endpoint)
+bool Socket::Connect(const Endpoint& endpoint)
 {
-	int err = connect(handle, endpoint->GetSockAddr(), endpoint->Size());
+	int err = connect(handle, endpoint.GetSockAddr(), endpoint.Size());
 	if (err != 0) {
 		ESP_LOGE(TAG, "Socket unable to connect: errno %d, %s", errno, strerror(errno));
 		return false;
@@ -108,9 +108,9 @@ bool Socket::Init(int domain, int type, int protocol)
 }
 
 
-bool Socket::Bind(Endpoint* endpoint)
+bool Socket::Bind(const Endpoint& endpoint)
 {
-	int err = bind(handle, endpoint->GetSockAddr(), endpoint->Size());
+	int err = bind(handle, endpoint.GetSockAddr(), endpoint.Size());
 	if (err != 0) {
 		ESP_LOGE(TAG, "Socket unable to bind: errno %d, %s", errno, strerror(errno));
 		Close();

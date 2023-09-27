@@ -28,9 +28,9 @@ public:
 	void SetTimeout(TimeSpan timespan);
 	int Receive(void* buffer, size_t size, int flags = 0);
 	int Send(const void* buffer, size_t size, int flags = 0);
-	int SendTo(Endpoint* endpoint, const void* buffer, size_t size, int flags = 0);
-	bool Connect(Endpoint* endpoint);
-	bool Bind(Endpoint* endpoint);
+	int SendTo(const Endpoint& endpoint, const void* buffer, size_t size, int flags = 0);
+	bool Connect(const Endpoint& endpoint);
+	bool Bind(const Endpoint& endpoint);
 	bool Accept(Socket* client);
 	bool Listen(int backlog);
 	size_t Read(uint8_t* buffer, size_t size) override;
