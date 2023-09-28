@@ -11,4 +11,4 @@ idf_component_register(
 		helpers
 		interfaces
 		mtime
-						REQUIRES json nvs_flash)
+						REQUIRES json nvs_flash esp_timer)
