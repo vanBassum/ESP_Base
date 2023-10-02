@@ -4,23 +4,23 @@
 
 Socket::~Socket()
 {
-	if (handle < 0) return;
+	if (handle <= 0) return;
 	Close();
 }
 
 
 void Socket::Shutdown(int how)
 {
-	if (handle < 0) return;
+	if (handle <= 0) return;
 	shutdown(handle, how);
 }
 
 
 void Socket::Close()
 {
-	if (handle < 0) return;
+	if (handle <= 0) return;
 	close(handle);
-	handle = -1;
+	handle = 0;
 }
 
 
@@ -28,7 +28,7 @@ void Socket::Close()
 
 void Socket::SetKeepAlive(int enable, int idle, int interval, int count)
 {
-	if (handle < 0) return;
+	if (handle <= 0) return;
 	//https://stackoverflow.com/questions/74053375/should-the-values-set-with-setsockopt-stay-valid-during-lifetime-of-the-socket
 	// Set tcp keepalive option
 	setsockopt(handle, SOL_SOCKET, SO_KEEPALIVE, &enable, sizeof(int));
@@ -40,11 +40,11 @@ void Socket::SetKeepAlive(int enable, int idle, int interval, int count)
 
 int Socket::Receive(void* buffer, size_t size, int flags /* = 0 */)
 {
-	if (handle < 0) return 0;
+	if (handle <= 0) return 0;
 	int result =  recv(handle, buffer, size, flags);
 	if (result <= 0)
 	{
-		//ESP_LOGE(TAG, "Error occurred during receiving: errno %d, %s", errno, strerror(errno));
+		ESP_LOGE(TAG, "Error occurred during receiving: stat %d errno %d, %s", result, errno, strerror(errno));
 		Shutdown(0);
 		Close();
 	}
@@ -53,7 +53,7 @@ int Socket::Receive(void* buffer, size_t size, int flags /* = 0 */)
 
 int Socket::Send(const void* buffer, size_t size, int flags /* = 0 */)
 {
-	if (handle < 0) return 0;
+	if (handle <= 0) return 0;
 	size_t toWrite = size;
 	while (toWrite > 0) 
 	{
@@ -72,7 +72,7 @@ int Socket::Send(const void* buffer, size_t size, int flags /* = 0 */)
 
 int Socket::SendTo(const Endpoint& endpoint, const void* buffer, size_t size, int flags /* = 0 */)
 {
-	if (handle < 0) return 0;
+	if (handle <= 0) return 0;
 	int send = sendto(handle, buffer, size, flags, endpoint.GetSockAddr(), endpoint.Size());
 	if (send < 0) {
 		ESP_LOGE(TAG, "Error occurred during sending: errno %d, %s", errno, strerror(errno));
@@ -85,7 +85,15 @@ int Socket::SendTo(const Endpoint& endpoint, const void* buffer, size_t size, in
 
 bool Socket::Connect(const Endpoint& endpoint)
 {
-	int err = connect(handle, endpoint.GetSockAddr(), endpoint.Size());
+	if (handle <= 0) return false;
+	const struct sockaddr* addr = endpoint.GetSockAddr();
+	size_t size = endpoint.Size();
+	
+	struct sockaddr_in *ipv4 = (struct sockaddr_in *)addr;
+	char ipAddress[INET_ADDRSTRLEN];
+	inet_ntop(AF_INET, &(ipv4->sin_addr), ipAddress, INET_ADDRSTRLEN);
+
+	int err = connect(handle, addr, size);
 	if (err != 0) {
 		ESP_LOGE(TAG, "Socket unable to connect: errno %d, %s", errno, strerror(errno));
 		return false;
@@ -96,6 +104,8 @@ bool Socket::Connect(const Endpoint& endpoint)
 
 bool Socket::Init(int domain, int type, int protocol)
 {
+	if (handle > 0) 
+		Close();
 	handle = socket(domain, type, protocol);
 	if (handle < 0) 
 	{
@@ -110,6 +120,7 @@ bool Socket::Init(int domain, int type, int protocol)
 
 bool Socket::Bind(const Endpoint& endpoint)
 {
+	if (handle <= 0) return 0;
 	int err = bind(handle, endpoint.GetSockAddr(), endpoint.Size());
 	if (err != 0) {
 		ESP_LOGE(TAG, "Socket unable to bind: errno %d, %s", errno, strerror(errno));
@@ -124,7 +135,7 @@ bool Socket::Bind(const Endpoint& endpoint)
 
 bool Socket::Accept(Socket* client)
 {
-	if (handle < 0) return false;
+	if (handle <= 0) return 0;
 	struct sockaddr_storage source_addr; // Large enough for both IPv4 or IPv6
 	socklen_t addr_len = sizeof(source_addr);
 	int sock = accept(handle, (struct sockaddr *)&source_addr, &addr_len);
@@ -149,6 +160,7 @@ bool Socket::Accept(Socket* client)
 
 bool Socket::Listen(int backlog)
 {
+	if (handle <= 0) return 0;
 	int err = listen(handle, backlog);
 	if (err != 0) {
 		ESP_LOGE(TAG, "Error occurred during listen: errno %d, %s", errno, strerror(errno));
@@ -173,15 +185,18 @@ void Socket::SetTimeout(TimeSpan timespan)
 
 size_t Socket::Read(uint8_t* data, size_t size)
 {
+	if (handle <= 0) 
+		return 0;
 	int result = Receive(data, size);
 	if (result < 0)
-		result = 0;
+		return 0;
 	return result;
 }
 
 
 size_t Socket::Write(const uint8_t* data, size_t size)
 {
+	if (handle <= 0) return 0;
 	int result = Send(data, size);
 	if (result < 0)
 		result = 0;

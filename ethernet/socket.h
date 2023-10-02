@@ -11,7 +11,7 @@
 
 class Socket : public IStream
 {
-	int handle = -1;
+	int handle = 0;
 
 public:
 	~Socket();
