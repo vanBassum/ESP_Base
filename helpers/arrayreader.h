@@ -20,7 +20,7 @@ struct ArrayWriter {
 
 	// Append a value to the array and update the index
 	template <typename T>
-		bool Append(const T& value) {
+		size_t Append(const T& value) {
 			if (index + sizeof(value) > size) {
 				ESP_LOGE(TAG, "index out of bounds");
 				return false;
@@ -28,9 +28,8 @@ struct ArrayWriter {
 			
 			static_assert(std::is_trivially_copyable<T>::value, "Non-trivially copyable type");
 			std::memcpy(&data[index], &value, sizeof(value));
-			//ESP_LOG_BUFFER_HEXDUMP(TAG, &data[index], sizeof(value), ESP_LOG_INFO);
 			index += sizeof(value);
-			return true;
+			return sizeof(value);
 		}
 };
 
@@ -48,7 +47,7 @@ struct ArrayReader {
 
 	// Get a value from the array at the current index and update the index
 	template <typename T>
-		bool Read(T& value) {
+		size_t Read(T& value) {
 			if (index + sizeof(value) > size) {
 				ESP_LOGE(TAG, "index out of bounds");
 				return false;
@@ -56,6 +55,6 @@ struct ArrayReader {
 			static_assert(std::is_trivially_copyable<T>::value, "Non-trivially copyable type");
 			std::memcpy(&value, &data[index], sizeof(value));
 			index += sizeof(value);
-			return true;
+			return sizeof(value);
 		}
 };
