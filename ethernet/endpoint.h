@@ -32,6 +32,7 @@ public:
 	{
 		memset(&addr, 0, sizeof(addr));
 		struct sockaddr_in *dest_addr_ip4 = (struct sockaddr_in *)&addr ;
+		dest_addr_ip4->sin_len = sizeof(struct sockaddr_in);
 		dest_addr_ip4->sin_addr.s_addr = htonl(INADDR_ANY) ;
 		dest_addr_ip4->sin_family = AF_INET ;
 		dest_addr_ip4->sin_port = htons(port) ;
