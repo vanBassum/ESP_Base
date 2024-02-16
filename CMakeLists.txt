@@ -9,6 +9,6 @@ idf_component_register(
 		callbacks
 		ethernet
 		helpers
-		interfaces
+		itfs
 		mtime
 						REQUIRES json nvs_flash esp_timer)
