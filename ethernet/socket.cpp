@@ -176,8 +176,8 @@ bool Socket::Listen(int backlog)
 void Socket::SetTimeout(TimeSpan timespan)
 {
 	struct timeval timeout;
-	timeout.tv_sec = timespan.GetSeconds();
-	timeout.tv_usec = (timespan.GetMiliSeconds() % 1000) * 1000;
+	timeout.tv_sec = timespan.getSeconds();
+	timeout.tv_usec = 0; //(timespan.GetMiliSeconds() % 1000) * 1000;
 	setsockopt(handle, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof timeout);
 	
 }

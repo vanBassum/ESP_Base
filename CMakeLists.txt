@@ -4,6 +4,8 @@ idf_component_register(
 	SRCS
 		esp_base.cpp
 		ethernet/socket.cpp
+		mtime/datetime.cpp
+		mtime/timespan.cpp
 	INCLUDE_DIRS
 		.
 		callbacks
