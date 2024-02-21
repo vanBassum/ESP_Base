@@ -21,30 +21,28 @@ private:
     std::vector<std::shared_ptr<IDevice>> devices;
 
     // Create a new device based on the configuration
-    bool CreateDevice(IDeviceConfig& config) {
+    Result CreateDevice(IDeviceConfig& config) {
         const char* deviceKey = nullptr;
-        if (!config.getProperty("key", &deviceKey)) {
-            ESP_LOGE(TAG, "Device key not found");
-            return false;
-        }
+        RETURN_ON_ERR(config.getProperty("key", &deviceKey));
 
         // Check if a device with this key already exists
         if (std::any_of(devices.begin(), devices.end(), [deviceKey](const auto& device) {
             return std::strcmp(device->key, deviceKey) == 0;
         })) {
             //ESP_LOGW(TAG, "Device with key %s already exists", deviceKey);
-            return false;
+            return Result::Error;
         }
 
         // Create a new device
         ESP_LOGI(TAG, "Creating device '%s'", deviceKey);
-        auto device = driverRegistry->CreateDriver(shared_from_this(), config);
+        std::shared_ptr<IDevice> device;
+        RETURN_ON_ERR(driverRegistry->CreateDriver(shared_from_this(), config,device));
         if(device)
         {
             devices.push_back(device);
-            return true;
+            return Result::Ok;
         }
-        return false;
+        return Result::Error;
     }
 
     enum PollResult : uint8_t
@@ -124,7 +122,7 @@ private:
             // Loop through detectors to find new devices
             for (auto& detector : detectors) {
                 detector->search([&](IDeviceConfig& config) {
-                    reScan |= CreateDevice(config);
+                    reScan |= CreateDevice(config)==Result::Ok;
                 });
             }
 
@@ -193,6 +191,7 @@ public:
             dev = castedDevice;
             return Result::Ok;
         }
+        ESP_LOGW(TAG, "Device with key '%s' not found", key);
         return Result::Error;
     }
 };

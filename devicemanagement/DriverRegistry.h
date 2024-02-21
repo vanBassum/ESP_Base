@@ -24,19 +24,12 @@ public:
     }
 
     // Create a driver based on compatibility field
-    std::shared_ptr<IDevice> CreateDriver(std::shared_ptr<DeviceManager> deviceManager, IDeviceConfig& config) {
-        
+    Result CreateDriver(std::shared_ptr<DeviceManager> deviceManager, IDeviceConfig& config, std::shared_ptr<IDevice>& result) {
         const char* deviceKey = nullptr;
-        if (!config.getProperty("key", &deviceKey)) {
-            ESP_LOGE(TAG, "Property missing: 'key'");
-            return nullptr;
-        }
-
         const char* compatibility = nullptr;
-        if (!config.getProperty("compatible", &compatibility)) {
-            ESP_LOGE(TAG, "Property missing: 'compatible' for device '%s'", deviceKey);
-            return nullptr;
-        }
+
+        RETURN_ON_ERR(config.getProperty("key", &deviceKey));
+        RETURN_ON_ERR(config.getProperty("compatible", &compatibility));
 
         for (const auto& entry : drivers) {
             if (std::strcmp(entry.compatibility, compatibility) == 0) {
@@ -46,11 +39,12 @@ public:
                     device->key = deviceKey;
                     device->DeviceSetConfig(config);
                 }
-                return device;
+                result = device;
+                return Result::Ok;
             }
         }
 
         ESP_LOGE(TAG, "No driver found for compatibility '%s' for device '%s'", compatibility, deviceKey);
-        return nullptr;
+        return Result::Error;
     }
 };

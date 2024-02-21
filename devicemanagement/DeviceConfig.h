@@ -5,18 +5,19 @@ class IDeviceConfig
 {
 public:
     virtual ~IDeviceConfig() {}
-    virtual bool getProperty(const char *key, const char **value) = 0;
-    virtual bool getProperty(const char *key, uint8_t *value) = 0;
-    virtual bool getProperty(const char *key, uint16_t *value) = 0;
-    virtual bool getProperty(const char *key, uint32_t *value) = 0;
-    virtual bool getProperty(const char *key, int8_t *value) = 0;
-    virtual bool getProperty(const char *key, int16_t *value) = 0;
-    virtual bool getProperty(const char *key, int32_t *value) = 0;
-    virtual bool getProperty(const char *key, int *value) = 0;
+    virtual Result getProperty(const char *key, const char **value) = 0;
+    virtual Result getProperty(const char *key, uint8_t *value) = 0;
+    virtual Result getProperty(const char *key, uint16_t *value) = 0;
+    virtual Result getProperty(const char *key, uint32_t *value) = 0;
+    virtual Result getProperty(const char *key, int8_t *value) = 0;
+    virtual Result getProperty(const char *key, int16_t *value) = 0;
+    virtual Result getProperty(const char *key, int32_t *value) = 0;
+    virtual Result getProperty(const char *key, int *value) = 0;
 };
 
 class DeviceConfigReader : public IDeviceConfig
 {
+    constexpr static const char* TAG = "DeviceConfigReader";
     Device deviceConfig;
 
     // Method to read properties of a device by key
@@ -29,6 +30,7 @@ class DeviceConfigReader : public IDeviceConfig
                 return &deviceConfig[i].value;
             }
         }
+        ESP_LOGE(TAG, "Property for key '%s' not found", key);
         return nullptr; // Property not found
     }
 
@@ -36,75 +38,75 @@ public:
     // Constructor to initialize the device tree
     DeviceConfigReader(Device deviceConfig) : deviceConfig(deviceConfig) {}
 
-    virtual bool getProperty(const char *key, const char **value) override
+    virtual Result getProperty(const char *key, const char **value) override
     {
         const DevicePropertyValue *v = getProperty(key);
         if (v == nullptr)
-            return false;
+            return Result::Error;
         *value = v->str;
-        return true;
+        return Result::Ok;
     }
 
-    virtual bool getProperty(const char *key, uint8_t *value) override
+    virtual Result getProperty(const char *key, uint8_t *value) override
     {
         const DevicePropertyValue *v = getProperty(key);
         if (v == nullptr)
-            return false;
+            return Result::Error;
         *value = v->u08;
-        return true;
+        return Result::Ok;
     }
 
-    virtual bool getProperty(const char *key, uint16_t *value) override
+    virtual Result getProperty(const char *key, uint16_t *value) override
     {
         const DevicePropertyValue *v = getProperty(key);
         if (v == nullptr)
-            return false;
+            return Result::Error;
         *value = v->u16;
-        return true;
+        return Result::Ok;
     }
 
-    virtual bool getProperty(const char *key, uint32_t *value) override
+    virtual Result getProperty(const char *key, uint32_t *value) override
     {
         const DevicePropertyValue *v = getProperty(key);
         if (v == nullptr)
-            return false;
+            return Result::Error;
         *value = v->u32;
-        return true;
+        return Result::Ok;
     }
 
-    virtual bool getProperty(const char *key, int8_t *value) override
+    virtual Result getProperty(const char *key, int8_t *value) override
     {
         const DevicePropertyValue *v = getProperty(key);
         if (v == nullptr)
-            return false;
+            return Result::Error;
         *value = v->i08;
-        return true;
+        return Result::Ok;
     }
 
-    virtual bool getProperty(const char *key, int16_t *value) override
+    virtual Result getProperty(const char *key, int16_t *value) override
     {
         const DevicePropertyValue *v = getProperty(key);
         if (v == nullptr)
-            return false;
+            return Result::Error;
         *value = v->i16;
-        return true;
+        return Result::Ok;
     }
 
-    virtual bool getProperty(const char *key, int32_t *value) override
+    virtual Result getProperty(const char *key, int32_t *value) override
     {
         const DevicePropertyValue *v = getProperty(key);
         if (v == nullptr)
-            return false;
+            return Result::Error;
         *value = v->i32;
-        return true;
+        return Result::Ok;
     }
 
-    virtual bool getProperty(const char *key, int *value) override
+    virtual Result getProperty(const char *key, int *value) override
     {
         const DevicePropertyValue *v = getProperty(key);
         if (v == nullptr)
-            return false;
+            return Result::Error;
         *value = v->i32;
-        return true;
+        return Result::Ok;
     }
 };

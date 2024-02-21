@@ -11,14 +11,9 @@
 #include <cstring>
 #include "esp_check.h"
 
+#warning "These macro's are deprecated and should be avoided."
 
-#define DEV_SET_STATUS_AND_RETURN_ON_FALSE(a, newStatus, returnValue, log_tag, format, ...) do { \
-        if (unlikely(!(a))) {                                                                   \
-            ESP_LOGE(log_tag, "%s(%d): " format, __FUNCTION__, __LINE__, ##__VA_ARGS__);        \
-            DeviceSetStatus(newStatus);                                                               \
-            return returnValue;                                                                 \
-        }                                                                                       \
-    } while(0)
+
 
 #define DEV_RETURN_ON_FALSE(a, returnValue, log_tag, format, ...) do {                          \
         if (unlikely(!(a))) {                                                                   \
@@ -51,6 +46,27 @@
 
 
 
+// These are the new macro's
+
+#define RETURN_ON_ERR(result) do {                                                          \
+        if (unlikely((result) != Result::Ok)) {                                                 \
+            return result;                                                                      \
+        }                                                                                       \
+    } while(0)
+
+#define RETURN_ON_ERR_LOGE(result, log_tag, format, ...) do {                                           \
+        int resultInt = static_cast<int>(result);                                                           \
+        if (unlikely(result != Result::Ok)) {                                                               \
+            ESP_LOGE(log_tag, "%s:%d, ERR:%d " format, __FUNCTION__, __LINE__, resultInt, ##__VA_ARGS__);   \
+            return result;                                                                                  \
+        }                                                                                                   \
+    } while(0)
+
+
+
+
+
+
 
 
 #define DEVICE_PROP_STR(val)  {.str = (val)} // Initialize a pointer to a string
@@ -76,3 +92,32 @@ using Device = const DeviceProperty*;
 using DeviceTree = const Device*;   
 
 
+enum class Result : uint32_t
+{
+    Ok = 0,                                             /*!< value indicating success (no error) */
+    Error = 1,                                          /*!< Generic code indicating failure */
+    NotSupported = 2,                                   /*!< Indicates the method or specific configuration isn't supported */
+};
+
+// DEPRECATED: DeviceResult is deprecated. Use Result instead.
+using DeviceResult [[depricated]] = Result;
+
+
+enum class DeviceStatus : uint32_t
+{
+    Ready = 0,                                          /*!< Component is initialized and ready to use. */
+    Configuring = 1,                                    /*!< Component was created, waiting for configuration. */
+    Dependencies = 2,                                   /*!< Component was configured, waiting for dependencies. */
+    Initializing = 3,                                   /*!< Component needs initialization. */
+    FatalError = 4,                                     /*!< Component is in unrecoverable error state, possibly due to configuration errors. */
+    EndOfLife = 5,                                      /*!< Component is at the end of its life, all references should be removed. */
+};
+
+constexpr static const char* DeviceStatusStrings[] = {
+    "Ready",         
+    "Configuring",   
+    "Dependencies",  
+    "Initializing",  
+    "FatalError",    
+    "EndOfLife"      
+};
