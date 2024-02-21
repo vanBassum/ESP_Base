@@ -62,10 +62,6 @@ enum class Result : uint32_t
     NotSupported = 2,                                   /*!< Indicates the method or specific configuration isn't supported */
 };
 
-// DEPRECATED: DeviceResult is deprecated. Use Result instead.
-using DeviceResult [[depricated]] = Result;
-
-
 enum class DeviceStatus : uint32_t
 {
     Ready = 0,                                          /*!< Component is initialized and ready to use. */
