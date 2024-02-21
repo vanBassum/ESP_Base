@@ -30,5 +30,5 @@ public:
     virtual Result DeviceLoadDependencies(std::shared_ptr<DeviceManager> deviceManager) = 0;
     virtual Result DeviceInit() = 0;
     DeviceStatus DeviceGetStatus() {return status;}
-    bool DeviceCheckStatus(DeviceStatus cStatus) { return cStatus == status;}
+    Result DeviceCheckStatus(DeviceStatus cStatus) { return cStatus == status ? Result::Ok : Result::Error;}
 };

@@ -159,25 +159,6 @@ public:
         return Result::Ok;
     }
 
-    
-    template<typename Device> 
-    [[depricated]]
-    std::shared_ptr<Device> getDeviceByKey(const char* key) {
-        assert(initialized_);
-        auto it = std::find_if(devices.begin(), devices.end(), [key](const auto& device) {
-            return std::strcmp(device->key, key) == 0;
-        });
-
-        if (it != devices.end()) {
-            // Attempt to cast to the specified Device type TODO: Add typeinformation to IDevice to prevent problems!
-            std::shared_ptr<Device> castedDevice = std::static_pointer_cast<Device>(*it);
-            return castedDevice;
-        } else {
-            return nullptr;
-        }
-    }
-
-
     template<typename Device>
     Result getDeviceByKey(const char* key, std::shared_ptr<Device>& dev) {
         assert(initialized_);
