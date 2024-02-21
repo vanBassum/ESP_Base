@@ -47,27 +47,40 @@ private:
         return false;
     }
 
-    int pollDevice(std::shared_ptr<IDevice> device)
+    enum PollResult : uint8_t
+    {
+        NONE        = 0x00,
+        CHANGED     = 0x01,
+        ENDOFLIFE   = 0x02,
+        HALT        = 0x04,
+    };
+
+    PollResult pollDevice(std::shared_ptr<IDevice> device)
     {
         switch (device->DeviceGetStatus())
         {
         case DeviceStatus::Dependencies: 
-            return device->DeviceLoadDependencies(shared_from_this()) == DeviceResult::Ok ? 1 : 0;
+            return device->DeviceLoadDependencies(shared_from_this()) == Result::Ok ? PollResult::CHANGED : PollResult::NONE;
 
         case DeviceStatus::Initializing:
-            return device->DeviceInit() == DeviceResult::Ok ? 1 : 0;
+            return device->DeviceInit() == Result::Ok ? PollResult::CHANGED : PollResult::NONE;
 
-        case DeviceStatus::Error:            // Driver is end of life
-            return 2;
+        case DeviceStatus::EndOfLife:
+            return (PollResult)(PollResult::CHANGED | PollResult::ENDOFLIFE);
 
-        case DeviceStatus::ConfigError:      // Unrecoverable error!
-            ESP_LOGE(TAG, "Error in device configuration!");
-            assert(false);
-        case DeviceStatus::Configuring:          // This should not be possible, CreateDriver configures the device!
+        case DeviceStatus::FatalError:
+            return (PollResult)(PollResult::CHANGED | PollResult::HALT);
+
+        case DeviceStatus::Configuring:                 // Something was wrong in the device configuration
+            return (PollResult)(PollResult::CHANGED | PollResult::HALT);
+
         case DeviceStatus::Ready:
-        default:
-            return 0;
+            return PollResult::NONE;
+        //default:
+        //    return PollResult::NONE;
         }
+
+        return PollResult::NONE;
     }
 
     void work() {
@@ -75,14 +88,35 @@ private:
             bool reScan = false;
 
             for (auto it = devices.begin(); it != devices.end();) {
-                int stat = pollDevice(*it);
+                std::shared_ptr<IDevice> device = *it;
+                PollResult stat = pollDevice(device);
 
-                if (stat == 1) {
+                if(stat & PollResult::CHANGED)
+                {
+                    DeviceStatus deviceStatus = device->DeviceGetStatus();
+                    if(deviceStatus == DeviceStatus::Ready)
+                        ESP_LOGI(TAG, "Device '%s' is '%s'", device->key, DeviceStatusStrings[(int)deviceStatus]);
+
+                    if(deviceStatus == DeviceStatus::EndOfLife)
+                        ESP_LOGW(TAG, "Device '%s' is '%s'", device->key, DeviceStatusStrings[(int)deviceStatus]);
+
+                    if(deviceStatus == DeviceStatus::FatalError)
+                        ESP_LOGE(TAG, "Device '%s' is '%s'", device->key, DeviceStatusStrings[(int)deviceStatus]);
+
                     reScan = true;
-                    ++it; // Move to the next device
-                } else if (stat == 2) {
-                    it = devices.erase(it); // Remove the device from the list
-                } else {
+                }
+
+                if(stat & PollResult::HALT)
+                {
+                    assert(false && "Device is in unrecoverable state.");  
+                }
+                    
+                if(stat & PollResult::ENDOFLIFE)
+                {
+                    it = devices.erase(it);
+                }
+                else
+                {
                     ++it; // Move to the next device
                 }
             }
@@ -121,13 +155,15 @@ public:
 
     // Register a new detector
 
-    void RegisterDetector(std::shared_ptr<IDeviceDetector> detector) {
+    Result RegisterDetector(std::shared_ptr<IDeviceDetector> detector) {
         assert(initialized_);
         detectors.push_back(detector);
+        return Result::Ok;
     }
 
     
     template<typename Device> 
+    [[depricated]]
     std::shared_ptr<Device> getDeviceByKey(const char* key) {
         assert(initialized_);
         auto it = std::find_if(devices.begin(), devices.end(), [key](const auto& device) {
@@ -145,7 +181,7 @@ public:
 
 
     template<typename Device>
-    DeviceResult getDeviceByKey(const char* key, std::shared_ptr<Device>& dev) {
+    Result getDeviceByKey(const char* key, std::shared_ptr<Device>& dev) {
         assert(initialized_);
         auto it = std::find_if(devices.begin(), devices.end(), [key](const auto& device) {
             return std::strcmp(device->key, key) == 0;
@@ -155,8 +191,8 @@ public:
             // Attempt to cast to the specified Device type TODO: Add typeinformation to IDevice to prevent problems!
             std::shared_ptr<Device> castedDevice = std::static_pointer_cast<Device>(*it);
             dev = castedDevice;
-            return DeviceResult::Ok;
+            return Result::Ok;
         }
-        return DeviceResult::Error;
+        return Result::Error;
     }
 };

@@ -28,14 +28,14 @@
     } while(0)
 
 #define DEV_RETURN_ON_ERROR(result, log_tag, format, ...) do {                                  \
-        if (unlikely((result) != DeviceResult::Ok)) {                                           \
+        if (unlikely((result) != Result::Ok)) {                                           \
             ESP_LOGE(log_tag, "%s(%d): " format, __FUNCTION__, __LINE__, ##__VA_ARGS__);        \
             return result;                                                                      \
         }                                                                                       \
     } while(0)
 
 #define DEV_RETURN_ON_ERROR_SILENT(result) do {                                                 \
-        if (unlikely((result) != DeviceResult::Ok)) {                                           \
+        if (unlikely((result) != Result::Ok)) {                                           \
             return result;                                                                      \
         }                                                                                       \
     } while(0)
