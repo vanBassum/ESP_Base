@@ -10,4 +10,5 @@ idf_component_register(
 		callbacks
 		helpers
 		mtime
+		rtos
 						REQUIRES json nvs_flash esp_timer)
