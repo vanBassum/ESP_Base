@@ -172,7 +172,7 @@ public:
             dev = castedDevice;
             return Result::Ok;
         }
-        ESP_LOGW(TAG, "Device with key '%s' not found", key);
+        //ESP_LOGW(TAG, "Device with key '%s' not found", key);
         return Result::Error;
     }
 };
