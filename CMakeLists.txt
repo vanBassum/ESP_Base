@@ -5,11 +5,13 @@ idf_component_register(
 		esp_base.cpp
 		mtime/datetime.cpp
 		mtime/timespan.cpp
+		network/Socket.cpp
 	INCLUDE_DIRS
 		.
 		callbacks
 		devicemanagement
 		helpers
 		mtime
+		network
 		rtos
 						REQUIRES json nvs_flash esp_timer)

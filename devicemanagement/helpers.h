@@ -26,14 +26,9 @@
     } while(0)
 
 
-
-
-
-
-
-
 #define DEVICE_PROP_STR(val)  {.str = (val)} // Initialize a pointer to a string
 #define DEVICE_PROP_I32(val)  {.i32 = (val)} // Initialize an int32_t value
+#define DEVICE_PROP_U16(val)  {.u16 = (val)} 
 #define DEVICE_END_MARKER  {nullptr, {0}}  // End marker for the device tree
 
 union DevicePropertyValue {
