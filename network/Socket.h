@@ -31,5 +31,9 @@ public:
 	Result Bind(Endpoint& endpoint);
 	Result Accept(std::shared_ptr<Socket>& socket);
 	Result Listen(int backlog);
+	Result SetupForNonblocking();
+	Result WaitForData(struct timeval* timeout);
 };
+
+
 

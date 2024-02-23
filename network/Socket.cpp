@@ -171,3 +171,36 @@ Result Socket::Listen(int backlog) {
     }
     return Result::Ok;
 }
+
+
+Result Socket::SetupForNonblocking() {
+    if (handle < 0) {
+        ESP_LOGE(TAG, "Socket not initialized");
+        return Result::Error;
+    }
+    int ret = fcntl(handle, F_SETFL, O_NONBLOCK);
+    if (ret == -1) {
+        ESP_LOGE(TAG, "Error setting socket to non-blocking");
+        return Result::Error;
+    }
+    return Result::Ok;
+}
+
+Result Socket::WaitForData(struct timeval* timeout) {
+    if (handle < 0) {
+        ESP_LOGE(TAG, "Socket not initialized");
+        return Result::Error;
+    }
+
+    fd_set readset;
+    FD_ZERO(&readset);
+    FD_SET(handle, &readset);
+
+    int result = select(handle + 1, &readset, nullptr, nullptr, timeout);
+    if (result == -1) {
+        ESP_LOGE(TAG, "Error in WaitForData");
+        return Result::Error;
+    }
+    return Result::Ok;
+}
+

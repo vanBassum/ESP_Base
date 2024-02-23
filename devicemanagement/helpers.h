@@ -17,13 +17,22 @@
         }                                                                                       \
     } while(0)
 
-#define RETURN_ON_ERR_LOGE(result, log_tag, format, ...) do {                                           \
+#define RETURN_ON_ERR_LOG(level, result, log_tag, format, ...) do {                                           \
         int resultInt = static_cast<int>(result);                                                           \
         if (unlikely(result != Result::Ok)) {                                                               \
-            ESP_LOGE(log_tag, "%s:%d, ERR:%d " format, __FUNCTION__, __LINE__, resultInt, ##__VA_ARGS__);   \
+            level(log_tag, "%s:%d, ERR:%d " format, __FUNCTION__, __LINE__, resultInt, ##__VA_ARGS__);   \
             return result;                                                                                  \
         }                                                                                                   \
     } while(0)
+
+#define RETURN_ON_ERR_LOGE(result, log_tag, format, ...) RETURN_ON_ERR_LOG(ESP_LOGE, result, log_tag, format, ##__VA_ARGS__)
+#define RETURN_ON_ERR_LOGW(result, log_tag, format, ...) RETURN_ON_ERR_LOG(ESP_LOGW, result, log_tag, format, ##__VA_ARGS__)
+#define RETURN_ON_ERR_LOGI(result, log_tag, format, ...) RETURN_ON_ERR_LOG(ESP_LOGI, result, log_tag, format, ##__VA_ARGS__)
+#define RETURN_ON_ERR_LOGD(result, log_tag, format, ...) RETURN_ON_ERR_LOG(ESP_LOGD, result, log_tag, format, ##__VA_ARGS__)
+#define RETURN_ON_ERR_LOGV(result, log_tag, format, ...) RETURN_ON_ERR_LOG(ESP_LOGV, result, log_tag, format, ##__VA_ARGS__)
+
+
+
 
 
 #define DEVICE_PROP_STR(val)  {.str = (val)} // Initialize a pointer to a string
