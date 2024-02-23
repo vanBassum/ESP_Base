@@ -18,9 +18,8 @@
     } while(0)
 
 #define RETURN_ON_ERR_LOG(level, result, log_tag, format, ...) do {                                           \
-        int resultInt = static_cast<int>(result);                                                           \
         if (unlikely(result != Result::Ok)) {                                                               \
-            level(log_tag, "%s:%d, ERR:%d " format, __FUNCTION__, __LINE__, resultInt, ##__VA_ARGS__);   \
+            level(log_tag, "%s:%d, " format, __FUNCTION__, __LINE__, ##__VA_ARGS__);   \
             return result;                                                                                  \
         }                                                                                                   \
     } while(0)
