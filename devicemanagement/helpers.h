@@ -31,13 +31,17 @@
 #define RETURN_ON_ERR_LOGV(result, log_tag, format, ...) RETURN_ON_ERR_LOG(ESP_LOGV, result, log_tag, format, ##__VA_ARGS__)
 
 
-
-
-
 #define DEVICE_PROP_STR(val)  {.str = (val)} // Initialize a pointer to a string
-#define DEVICE_PROP_I32(val)  {.i32 = (val)} // Initialize an int32_t value
+#define DEVICE_PROP_I08(val)  {.i08 = (val)} 
+#define DEVICE_PROP_I16(val)  {.i16 = (val)} 
+#define DEVICE_PROP_I32(val)  {.i32 = (val)} 
+#define DEVICE_PROP_U08(val)  {.u08 = (val)} 
 #define DEVICE_PROP_U16(val)  {.u16 = (val)} 
+#define DEVICE_PROP_U32(val)  {.u32 = (val)} 
+
 #define DEVICE_END_MARKER  {nullptr, {0}}  // End marker for the device tree
+
+
 
 union DevicePropertyValue {
     const char* str;
