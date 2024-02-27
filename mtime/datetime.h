@@ -36,6 +36,8 @@ public:
     DateTime();
     DateTime(time_t epochUtcSeconds);
 
+    time_t GetEpochUtc(DateTimeMode timeMode);
+
 	// Function to get time of day as TimeSpan
 	TimeSpan getTimeOfDay(DateTimeMode timeMode = DateTimeMode::LOCAL) const;
 	
@@ -47,6 +49,7 @@ public:
 
     // Get the current date and time
     static DateTime Now();
+
 
     // Arithmetic operations with TimeSpan
     DateTime operator+(const TimeSpan& duration) const;
