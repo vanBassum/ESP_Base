@@ -6,6 +6,8 @@
 #include <string>
 #include <iomanip>
 #include <sstream>
+#include "assert.h"
+#include "memory.h"
 
 #define KCTIMEFORMAT	"%d%m%Y%H%M%S"      //Only required for the strptime FIX
 
@@ -44,6 +46,16 @@ std::string DateTime::toString(const std::string& format, DateTimeMode timeMode)
     return buffer;
 }
 
+// return DataTime as time_t
+time_t DateTime::GetEpochUtc(DateTimeMode timeMode){
+    if(timeMode == DateTimeMode::UTC) {
+        return epochUtcSeconds;
+    }
+    else { 
+        ESP_LOGE(TAG, "Error time needs to be UTC !");
+        assert(false);
+    }    
+}
 
 bool SetStr_fix(std::string str, int *val)
 {
@@ -101,16 +113,10 @@ DateTime DateTime::strptime_fix(const std::string& dateString, const std::string
 	return InvalidDateTime;
 }
 
-
-
-
-
-
-
 // Convert string to DateTime
 DateTime DateTime::FromString(const std::string& dateString, const std::string& format, DateTimeMode timeMode) {
     struct tm timeinfo = { 0 };
-
+memset(&timeinfo, 0, sizeof (struct tm));
     // Parse the datetime string
     if (strptime(dateString.c_str(), format.c_str(), &timeinfo) == nullptr) {
 	    DateTime fix = strptime_fix(dateString, format, timeMode);
@@ -154,7 +160,6 @@ DateTime& DateTime::operator-=(const TimeSpan& duration) {
     return *this;
 }
 
-
 TimeSpan DateTime::operator-(const DateTime& other) const {
     return TimeSpan(epochUtcSeconds - other.epochUtcSeconds);
 }
@@ -197,7 +202,6 @@ time_t DateTime::convertToUtcTime(const struct tm* timeinfo) {
     return timegm(&utcTimeinfo); // Convert struct tm to time_t using timegm
 }
 
-
 // Implement getTimeOfDay as TimeSpan
 TimeSpan DateTime::getTimeOfDay(DateTimeMode timeMode) const {
 	struct tm timeinfo;
@@ -213,7 +217,6 @@ TimeSpan DateTime::getTimeOfDay(DateTimeMode timeMode) const {
 		timeinfo.tm_sec
 	};
 }
-
 
 // Algorithm: http://howardhinnant.github.io/date_algorithms.html
 int DateTime::days_from_epoch(int y, int m, int d)
