@@ -4,6 +4,7 @@
 #include "DriverRegistry.h"
 #include "IDeviceDetector.h"
 #include "IDevice.h"
+#include <vector>
 
 class DeviceManager : public std::enable_shared_from_this<DeviceManager> {
     constexpr static const char* TAG = "DeviceManager";
@@ -11,7 +12,6 @@ public:
     struct Config {
         TickType_t scanInterval = pdMS_TO_TICKS(1000);
     };
-
 private:
     Task task;
     Config config_;
@@ -19,6 +19,14 @@ private:
     std::shared_ptr<DriverRegistry> driverRegistry;
     std::vector<std::shared_ptr<IDeviceDetector>> detectors;
     std::vector<std::shared_ptr<IDevice>> devices;
+    std::vector<std::function<void(std::shared_ptr<IDevice> device)>> devicesChangedCallbacks;
+
+    void NotifyChanges(std::shared_ptr<IDevice> device)
+    {
+         for (const auto& callback : devicesChangedCallbacks) {
+            callback(device);
+        }
+    }
 
     // Create a new device based on the configuration
     Result CreateDevice(IDeviceConfig& config) {
@@ -51,6 +59,7 @@ private:
         CHANGED     = 0x01,
         ENDOFLIFE   = 0x02,
         HALT        = 0x04,
+        NOTIFY      = 0x08,
     };
 
     PollResult pollDevice(std::shared_ptr<IDevice> device)
@@ -64,18 +73,16 @@ private:
             return device->DeviceInit() == Result::Ok ? PollResult::CHANGED : PollResult::NONE;
 
         case DeviceStatus::EndOfLife:
-            return (PollResult)(PollResult::CHANGED | PollResult::ENDOFLIFE);
+            return (PollResult)(PollResult::CHANGED | PollResult::ENDOFLIFE | PollResult::NOTIFY);
 
         case DeviceStatus::FatalError:
-            return (PollResult)(PollResult::CHANGED | PollResult::HALT);
+            return (PollResult)(PollResult::CHANGED | PollResult::HALT | PollResult::NOTIFY);
 
         case DeviceStatus::Configuring:                 // Something was wrong in the device configuration
-            return (PollResult)(PollResult::CHANGED | PollResult::HALT);
+            return (PollResult)(PollResult::CHANGED | PollResult::HALT | PollResult::NOTIFY);
 
         case DeviceStatus::Ready:
-            return PollResult::NONE;
-        //default:
-        //    return PollResult::NONE;
+            return PollResult::NOTIFY;
         }
 
         return PollResult::NONE;
@@ -102,6 +109,11 @@ private:
                         ESP_LOGE(TAG, "Device '%s' is '%s'", device->key, DeviceStatusStrings[(int)deviceStatus]);
 
                     reScan = true;
+                }
+
+                if(stat & PollResult::NOTIFY)
+                {
+                    NotifyChanges(device);
                 }
 
                 if(stat & PollResult::HALT)
@@ -174,5 +186,9 @@ public:
         }
         //ESP_LOGW(TAG, "Device with key '%s' not found", key);
         return Result::Error;
+    }
+
+    void registerDeviceChangedCallback(const std::function<void(std::shared_ptr<IDevice>)>& callback) {
+        devicesChangedCallbacks.push_back(callback);
     }
 };
