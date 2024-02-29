@@ -44,7 +44,7 @@ private:
         // Create a new device
         ESP_LOGI(TAG, "Creating device '%s'", deviceKey);
         std::shared_ptr<IDevice> device;
-        RETURN_ON_ERR(driverRegistry->CreateDriver(shared_from_this(), config,device));
+        RETURN_ON_ERR(driverRegistry->CreateDriver(shared_from_this(), config, device));
         if(device)
         {
             devices.push_back(device);
@@ -70,7 +70,7 @@ private:
             return device->DeviceLoadDependencies(shared_from_this()) == Result::Ok ? PollResult::CHANGED : PollResult::NONE;
 
         case DeviceStatus::Initializing:
-            return device->DeviceInit() == Result::Ok ? PollResult::CHANGED : PollResult::NONE;
+            return (PollResult)((device->DeviceInit() == Result::Ok) ? (PollResult::CHANGED | PollResult::NOTIFY) : PollResult::NONE);
 
         case DeviceStatus::EndOfLife:
             return (PollResult)(PollResult::CHANGED | PollResult::ENDOFLIFE | PollResult::NOTIFY);
@@ -82,7 +82,7 @@ private:
             return (PollResult)(PollResult::CHANGED | PollResult::HALT | PollResult::NOTIFY);
 
         case DeviceStatus::Ready:
-            return PollResult::NOTIFY;
+            return PollResult::NONE;
         }
 
         return PollResult::NONE;
@@ -94,6 +94,7 @@ private:
 
             for (auto it = devices.begin(); it != devices.end();) {
                 std::shared_ptr<IDevice> device = *it;
+
                 PollResult stat = pollDevice(device);
 
                 if(stat & PollResult::CHANGED)
@@ -143,6 +144,8 @@ private:
         }
     }
 
+
+
 public:
     DeviceManager(std::shared_ptr<DriverRegistry> driverRegistry) : driverRegistry(driverRegistry) {};
 
@@ -187,6 +190,30 @@ public:
         //ESP_LOGW(TAG, "Device with key '%s' not found", key);
         return Result::Error;
     }
+
+    template<typename Device>
+    Result getDeviceByCompatibility(const char* compatibility, std::shared_ptr<Device>& dev) {
+        assert(initialized_); // Ensure the collection of devices is initialized
+
+        // Find the device with the specified compatibility
+        auto it = std::find_if(devices.begin(), devices.end(), [compatibility](const auto& device) {
+            return isCompatible(device, compatibility); // Check compatibility
+        });
+
+        if (it != devices.end()) {
+            // Attempt to cast the found device to the specified Device type
+            std::shared_ptr<Device> castedDevice = std::static_pointer_cast<Device>(*it);
+            dev = castedDevice;
+            return Result::Ok;
+        }
+
+        // Log a warning if no device with the specified compatibility is found
+        // ESP_LOGW(TAG, "Device with compatibility '%s' not found", compatibility);
+
+        // Return an error result
+        return Result::Error;
+    }
+
 
     void registerDeviceChangedCallback(const std::function<void(std::shared_ptr<IDevice>)>& callback) {
         devicesChangedCallbacks.push_back(callback);

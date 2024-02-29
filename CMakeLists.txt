@@ -3,6 +3,7 @@
 idf_component_register(
 	SRCS
 		esp_base.cpp
+		devicemanagement/IDevice.cpp
 		mtime/datetime.cpp
 		mtime/timespan.cpp
 		network/Socket.cpp

@@ -2,7 +2,9 @@
 #include <functional>
 #include <vector>
 #include <memory>
+#include <sstream>
 #include "IDevice.h"
+
 
 
 class DriverRegistry {
@@ -31,16 +33,36 @@ public:
         RETURN_ON_ERR(config.getProperty("key", &deviceKey));
         RETURN_ON_ERR(config.getProperty("compatible", &compatibility));
 
+        // Tokenize the compatibility string
+        std::vector<std::string> compatibilityList;
+        std::stringstream ss(compatibility);
+        std::string token;
+        while (std::getline(ss >> std::ws, token, ',')) {
+            // Trim leading and trailing whitespaces from the token
+            size_t start = token.find_first_not_of(" \t");
+            size_t end = token.find_last_not_of(" \t");
+            if (start != std::string::npos && end != std::string::npos)
+                compatibilityList.push_back(token.substr(start, end - start + 1));
+        }
+
+        // Iterate through drivers to find a compatible one
         for (const auto& entry : drivers) {
-            if (std::strcmp(entry.compatibility, compatibility) == 0) {
-                auto device = entry.factory();
-                if(device)
-                {
-                    device->key = deviceKey;
-                    device->DeviceSetConfig(config);
+            // Check if any of the compatibility strings match
+            for (const auto& comp : compatibilityList) {
+                if (std::strcmp(entry.compatibility, comp.c_str()) == 0) {
+                    // Create the device using the factory function
+                    auto device = entry.factory();
+                    if (device) {
+                        // Set device configuration
+                        device->key = deviceKey;
+                        device->compatibility = compatibility;
+                        device->DeviceSetConfig(config); // Ensure proper configuration setting
+
+                        // Assign the created device to the result pointer
+                        result = device;
+                        return Result::Ok;
+                    }
                 }
-                result = device;
-                return Result::Ok;
             }
         }
 
