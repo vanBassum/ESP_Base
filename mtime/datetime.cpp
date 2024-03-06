@@ -40,10 +40,11 @@ DateTime::DateTime(time_t epochUtcSeconds) : epochUtcSeconds(epochUtcSeconds) {}
 // Convert DateTime to string
 std::string DateTime::toString(const std::string& format, DateTimeMode timeMode) const {
     std::tm tm_info = (timeMode == DateTimeMode::LOCAL) ? *std::localtime(&epochUtcSeconds) : *std::gmtime(&epochUtcSeconds);
-    size_t size = 80;//strftime(nullptr, 0, format.c_str(), &tm_info) + 1; // Determine the required buffer size +1 for null terminator
-    std::string buffer(size, '\0'); // Allocate a buffer of the required size
-    strftime(&buffer[0], size, format.c_str(), &tm_info);// Format the time into the buffer
-    return buffer;
+    std::string buffer(80, '\0'); // Allocate a buffer of the required size
+    int temp = (int)strftime(&buffer[0], 80, format.c_str(), &tm_info) +1; // Determine the required buffer size +1 for null terminator
+    std::string buffer2(temp, '\0');
+    strftime(&buffer2[0], temp, format.c_str(), &tm_info);// Format the time into the buffer
+    return buffer2;
 }
 
 // return DataTime as time_t
