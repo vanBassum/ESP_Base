@@ -58,6 +58,21 @@ time_t DateTime::GetEpochUtc(DateTimeMode timeMode){
     }    
 }
 
+void DateTime::GetAsTimeval(struct timeval *timeval, DateTimeMode timeMode)
+{
+    if (timeMode == DateTimeMode::UTC) {
+        timeval->tv_sec = epochUtcSeconds;
+        timeval->tv_usec = 0; // Microseconds are set to 0 for UTC time
+    } else if (timeMode == DateTimeMode::LOCAL) {
+        // Convert UTC time to local time
+        struct tm localTime;
+        localtime_r(&epochUtcSeconds, &localTime);
+
+        timeval->tv_sec = mktime(&localTime); // Convert local time to seconds since epoch
+        timeval->tv_usec = 0; // Microseconds are set to 0 for local time
+    }
+}
+
 bool SetStr_fix(std::string str, int *val)
 {
 	//Explicitly chosen to not use the KC_functions.

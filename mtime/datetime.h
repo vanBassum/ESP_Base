@@ -1,6 +1,9 @@
 #pragma once
 #include <string>
 #include "timespan.h"
+#include <sys/time.h>
+#include <ctime>
+
 
 // Define a default date-time format
 #define DEFAULT_DATE_TIME_FORMAT        "%Y-%m-%d %H:%M:%S"
@@ -37,6 +40,8 @@ public:
     DateTime(time_t epochUtcSeconds);
 
     time_t GetEpochUtc(DateTimeMode timeMode);
+
+    void GetAsTimeval(struct timeval* timeval, DateTimeMode timeMode);
 
 	// Function to get time of day as TimeSpan
 	TimeSpan getTimeOfDay(DateTimeMode timeMode = DateTimeMode::LOCAL) const;
