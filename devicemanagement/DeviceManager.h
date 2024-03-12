@@ -42,7 +42,7 @@ private:
         }
 
         // Create a new device
-        ESP_LOGI(TAG, "Creating device '%s'", deviceKey);
+        //ESP_LOGI(TAG, "Creating device '%s'", deviceKey);
         std::shared_ptr<IDevice> device;
         RETURN_ON_ERR(driverRegistry->CreateDriver(shared_from_this(), config, device));
         if(device)
@@ -182,8 +182,10 @@ public:
         });
 
         if (it != devices.end()) {
+            std::shared_ptr<IDevice> genDevice = std::static_pointer_cast<IDevice>(*it);
+            RETURN_ON_ERR(genDevice->DeviceCheckStatus(DeviceStatus::Ready));
             // Attempt to cast to the specified Device type TODO: Add typeinformation to IDevice to prevent problems!
-            std::shared_ptr<Device> castedDevice = std::static_pointer_cast<Device>(*it);
+            std::shared_ptr<Device> castedDevice = std::static_pointer_cast<Device>(genDevice);
             dev = castedDevice;
             return Result::Ok;
         }
@@ -197,12 +199,14 @@ public:
 
         // Find the device with the specified compatibility
         auto it = std::find_if(devices.begin(), devices.end(), [compatibility](const auto& device) {
-            return isCompatible(device, compatibility); // Check compatibility
+            return device->isCompatible(compatibility); // Check compatibility
         });
 
         if (it != devices.end()) {
-            // Attempt to cast the found device to the specified Device type
-            std::shared_ptr<Device> castedDevice = std::static_pointer_cast<Device>(*it);
+            std::shared_ptr<IDevice> genDevice = std::static_pointer_cast<IDevice>(*it);
+            RETURN_ON_ERR(genDevice->DeviceCheckStatus(DeviceStatus::Ready));
+            // Attempt to cast to the specified Device type TODO: Add typeinformation to IDevice to prevent problems!
+            std::shared_ptr<Device> castedDevice = std::static_pointer_cast<Device>(genDevice);
             dev = castedDevice;
             return Result::Ok;
         }
