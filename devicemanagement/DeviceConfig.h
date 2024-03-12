@@ -30,7 +30,7 @@ class DeviceConfigReader : public IDeviceConfig
                 return &deviceConfig[i].value;
             }
         }
-        ESP_LOGW(TAG, "Property for key '%s' not found", key);
+        //ESP_LOGW(TAG, "Property for key '%s' not found", key);
         return nullptr; // Property not found
     }
 
