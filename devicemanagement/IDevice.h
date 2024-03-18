@@ -13,7 +13,7 @@ public:
     const char *compatibility;
 
 protected:
-    void DeviceSetStatus(DeviceStatus newStatus) { status = newStatus; ESP_LOGI(TAG,"DeviceSetStatus  %s = %s", key, DeviceStatusStrings[(int)newStatus]); }
+    void DeviceSetStatus(DeviceStatus newStatus) { status = newStatus; }
 
 public:
     virtual ~IDevice() {}
