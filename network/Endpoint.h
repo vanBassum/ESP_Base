@@ -19,6 +19,23 @@ public:
     const sockaddr* GetSockAddr() const {
         return reinterpret_cast<const sockaddr*>(&addr);
     }
+
+    Result GetIP(ip_addr_t* ip) const { //https://github.com/espressif/esp-idf/blob/master/components/lwip/apps/ping/ping_sock.c#L86
+        if (addr.ss_family == AF_INET) {
+            struct sockaddr_in *from4 = (struct sockaddr_in *)&addr;
+            inet_addr_to_ip4addr(ip_2_ip4(ip), &from4->sin_addr);
+            IP_SET_TYPE_VAL(*ip, IPADDR_TYPE_V4);
+        } else if (addr.ss_family == AF_INET6) {
+            struct sockaddr_in6 *from6 = (struct sockaddr_in6 *)&addr;
+            inet6_addr_to_ip6addr(ip_2_ip6(ip), &from6->sin6_addr);
+            IP_SET_TYPE_VAL(*ip, IPADDR_TYPE_V6);
+        } else {
+            // Unsupported address family
+            return Result::Error;
+        }
+        return Result::Ok;
+    }
+
 	
 	Result SetPort(int port) {
         if (port < 0 || port > 65535) {
