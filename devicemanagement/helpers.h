@@ -12,18 +12,20 @@
 #include "esp_check.h"
 
 #define RETURN_ON_ERR(result) do {                                                          \
-        if (unlikely((result) != Result::Ok)) {                                                 \
-            return result;                                                                      \
+        Result res = result;                                                                \
+        if (unlikely((res) != Result::Ok)) {                                                 \
+            return res;                                                                      \
         }                                                                                       \
     } while(0)
 
-#define RETURN_ON_ERR_LOG(level, result, log_tag, format, ...) do {                                           \
-        if (unlikely(result != Result::Ok)) {                                                               \
-            level(log_tag, "%s:%d, " format, __FUNCTION__, __LINE__, ##__VA_ARGS__);   \
-            return result;                                                                                  \
+#define RETURN_ON_ERR_LOG(level, result, log_tag, format, ...) do {                                      \
+        Result res = result;                                                                            \
+        if (unlikely(res != Result::Ok)) {                                                               \
+            level(log_tag, "%s:%d, " format, __FUNCTION__, __LINE__, ##__VA_ARGS__);                    \
+            return res;                                                                                  \
         }                                                                                                   \
     } while(0)
-
+    
 #define RETURN_ON_ERR_LOGE(result, log_tag, format, ...) RETURN_ON_ERR_LOG(ESP_LOGE, result, log_tag, format, ##__VA_ARGS__)
 #define RETURN_ON_ERR_LOGW(result, log_tag, format, ...) RETURN_ON_ERR_LOG(ESP_LOGW, result, log_tag, format, ##__VA_ARGS__)
 #define RETURN_ON_ERR_LOGI(result, log_tag, format, ...) RETURN_ON_ERR_LOG(ESP_LOGI, result, log_tag, format, ##__VA_ARGS__)
