@@ -9,7 +9,7 @@ class Config
     static constexpr inline const char *TAG = "Config";
 
 public:
-    Config() : container(std::make_shared<ConfigContainer>("")) {}
+    Config() : container(std::make_shared<ConfigContainer>("Root")) {}
 
     Config(std::shared_ptr<IConfig> cfg) : container(cfg) {}
 
@@ -23,7 +23,7 @@ public:
     }
 
     template <typename T>
-    Result Set(const T &value)
+    Result Set(const T &value)const
     {
         return container->Set(value);
     }
@@ -35,4 +35,6 @@ public:
         Populate(result);
         return result;
     }
+
+    virtual void Print(int depth) {container->Print(depth);}
 };

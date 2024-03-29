@@ -11,4 +11,14 @@ public:
     ConfigContainer(const std::string& key);
     Result Add(std::shared_ptr<IConfig> value) override;
     Config operator[](const std::string& key) override;
+
+    void Print(int depth) override {
+        std::string indentation(depth * 2, ' '); // Create indentation string with depth * 4 spaces
+        printf("%s%s:\n", indentation.c_str(), _key.c_str());
+
+        for (const auto& config : _value) {
+            config->Print(depth + 1); // Print each element with increased depth
+        }
+    }
+
 };

@@ -20,6 +20,7 @@ public:
     virtual Result Populate(int16_t& value)             { ESP_LOGE(TAG, "Type mismatch"); return Result::Error; }
     virtual Result Populate(uint16_t& value)            { ESP_LOGE(TAG, "Type mismatch"); return Result::Error; }
     virtual Result Populate(int32_t& value)             { ESP_LOGE(TAG, "Type mismatch"); return Result::Error; }
+    virtual Result Populate(int& value)                 { return Populate((int32_t&)value); }
     virtual Result Populate(uint32_t& value)            { ESP_LOGE(TAG, "Type mismatch"); return Result::Error; }
     virtual Result Populate(int64_t& value)             { ESP_LOGE(TAG, "Type mismatch"); return Result::Error; }
     virtual Result Populate(uint64_t& value)            { ESP_LOGE(TAG, "Type mismatch"); return Result::Error; }
@@ -32,6 +33,7 @@ public:
     virtual Result Set(const int16_t& value)            { ESP_LOGE(TAG, "Type mismatch"); return Result::Error; }
     virtual Result Set(const uint16_t& value)           { ESP_LOGE(TAG, "Type mismatch"); return Result::Error; }
     virtual Result Set(const int32_t& value)            { ESP_LOGE(TAG, "Type mismatch"); return Result::Error; }
+    virtual Result Set(const int& value)                { return Set((const int32_t&)value); }
     virtual Result Set(const uint32_t& value)           { ESP_LOGE(TAG, "Type mismatch"); return Result::Error; }
     virtual Result Set(const int64_t& value)            { ESP_LOGE(TAG, "Type mismatch"); return Result::Error; }
     virtual Result Set(const uint64_t& value)           { ESP_LOGE(TAG, "Type mismatch"); return Result::Error; }
@@ -40,6 +42,9 @@ public:
     virtual Result Set(const double& value)             { ESP_LOGE(TAG, "Type mismatch"); return Result::Error; }
     virtual Result Set(const long double& value)        { ESP_LOGE(TAG, "Type mismatch"); return Result::Error; }
 
-
+    virtual void Print(int depth) {
+        std::string indentation(depth * 2, ' '); // Create indentation string with depth * 4 spaces
+        printf("%s%s: Not implemented\n", indentation.c_str(), _key.c_str());
+    }
 };
 

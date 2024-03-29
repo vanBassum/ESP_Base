@@ -30,5 +30,10 @@ public:
         _value = std::string(value);
         return Result::Ok;
     }
+
+    virtual void Print(int depth) {
+        std::string indentation(depth * 2, ' '); // Create indentation string with depth * 4 spaces
+        printf("%s%s: %s\n", indentation.c_str(), _key.c_str(), _value.c_str());
+    }
 };
 
