@@ -5,6 +5,7 @@
 
 class ConfigString : public IConfig
 {
+    static constexpr inline const char* TAG = "ConfigString";
     std::string _value;
 public:
     ConfigString(const std::string& key)
@@ -21,6 +22,12 @@ public:
     Result Set(const std::string& value)override
     {
         _value = value;
+        return Result::Ok;
+    }
+
+    Result Set(const char* value)override
+    {
+        _value = std::string(value);
         return Result::Ok;
     }
 };

@@ -3,22 +3,35 @@
 #include "IConfig.h"
 #include "ConfigContainer.h"
 
-class Config : public IConfig
+class Config
 {
     std::shared_ptr<IConfig> container;
+    static constexpr inline const char *TAG = "Config";
+
 public:
-    Config()  : container(std::make_shared<ConfigContainer>("")) {}
+    Config() : container(std::make_shared<ConfigContainer>("")) {}
 
-    Config(std::shared_ptr<IConfig> cfg) : container(cfg) {  }
+    Config(std::shared_ptr<IConfig> cfg) : container(cfg) {}
 
-    Result Add(std::shared_ptr<IConfig> value) override { return container->Add(value); }
-    Config operator[](const std::string& key) override { return (*container)[key]; }
-    Result Populate(std::string& value)  override {return container->Populate(value);}
-    Result Set(const std::string& value) override { return container->Set(value); }
+    Result Add(std::shared_ptr<IConfig> value) { return container->Add(value); }
+    Config operator[](const std::string &key) { return (*container)[key]; }
 
-    std::string AsString()
+    template <typename T>
+    Result Populate(T &value)
     {
-        std::string result;
+        return container->Populate(value);
+    }
+
+    template <typename T>
+    Result Set(const T &value)
+    {
+        return container->Set(value);
+    }
+
+    template <typename T>
+    T GetAs()
+    {
+        T result;
         Populate(result);
         return result;
     }
