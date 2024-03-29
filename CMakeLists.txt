@@ -3,6 +3,9 @@
 idf_component_register(
 	SRCS
 		esp_base.cpp
+		configuration/ConfigContainer.cpp
+		configuration/ConfigFactory.cpp
+		configuration/IConfig.cpp
 		devicemanagement/IDevice.cpp
 		mtime/datetime.cpp
 		mtime/timespan.cpp
@@ -10,7 +13,7 @@ idf_component_register(
 	INCLUDE_DIRS
 		.
 		callbacks
-		config
+		configuration
 		devicemanagement
 		helpers
 		mtime

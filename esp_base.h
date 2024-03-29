@@ -1,7 +1,9 @@
 #pragma once
 
+#include "esp_base.h"
+
 #include "callbacks/callbacks.h"
-#include "config/config.h"
+#include "configuration/configuration.h"
 #include "devicemanagement/devicemanagement.h"
 #include "helpers/helpers.h"
 #include "mtime/mtime.h"
