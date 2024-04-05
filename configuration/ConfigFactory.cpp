@@ -1,6 +1,6 @@
 #include "ConfigFactory.h"
 #include "Config.h"
-#include "ConfigPrimitives.h"
+#include "ConfigValue.h"
 
 ConfigFactory::ConfigFactory(const std::string &key, std::shared_ptr<IConfig> parent)
 {
@@ -102,98 +102,98 @@ Result ConfigFactory::Populate(long double &value)
 
 Result ConfigFactory::Set(const std::string &value)
 {
-    std::shared_ptr<ConfigString> conf = std::make_shared<ConfigString>(_key);
+    std::shared_ptr<ConfigValue<std::string>> conf = std::make_shared<ConfigValue<std::string>>(_key);
     RETURN_ON_ERR(conf->Set(value));
     return _parent->Add(conf);
 }
 
 Result ConfigFactory::Set(const char *value)
 {
-    std::shared_ptr<ConfigString> conf = std::make_shared<ConfigString>(_key);
+    std::shared_ptr<ConfigValue<std::string>> conf = std::make_shared<ConfigValue<std::string>>(_key);
     RETURN_ON_ERR(conf->Set(value));
     return _parent->Add(conf);
 }
 
 Result ConfigFactory::Set(const int8_t &value)
 {
-    std::shared_ptr<ConfigPrimitives> conf = std::make_shared<ConfigPrimitives>(_key);
+    std::shared_ptr<ConfigValue<int8_t>> conf = std::make_shared<ConfigValue<int8_t>>(_key);
     RETURN_ON_ERR(conf->Set(value));
     return _parent->Add(conf);
 }
 
 Result ConfigFactory::Set(const uint8_t &value)
 {
-    std::shared_ptr<ConfigPrimitives> conf = std::make_shared<ConfigPrimitives>(_key);
+    std::shared_ptr<ConfigValue<uint8_t>> conf = std::make_shared<ConfigValue<uint8_t>>(_key);
     RETURN_ON_ERR(conf->Set(value));
     return _parent->Add(conf);
 }
 
 Result ConfigFactory::Set(const int16_t &value)
 {
-    std::shared_ptr<ConfigPrimitives> conf = std::make_shared<ConfigPrimitives>(_key);
+    std::shared_ptr<ConfigValue<int16_t>> conf = std::make_shared<ConfigValue<int16_t>>(_key);
     RETURN_ON_ERR(conf->Set(value));
     return _parent->Add(conf);
 }
 
 Result ConfigFactory::Set(const uint16_t &value)
 {
-    std::shared_ptr<ConfigPrimitives> conf = std::make_shared<ConfigPrimitives>(_key);
+    std::shared_ptr<ConfigValue<uint16_t>> conf = std::make_shared<ConfigValue<uint16_t>>(_key);
     RETURN_ON_ERR(conf->Set(value));
     return _parent->Add(conf);
 }
 
 Result ConfigFactory::Set(const int32_t &value)
 {
-    std::shared_ptr<ConfigPrimitives> conf = std::make_shared<ConfigPrimitives>(_key);
+    std::shared_ptr<ConfigValue<int32_t>> conf = std::make_shared<ConfigValue<int32_t>>(_key);
     RETURN_ON_ERR(conf->Set(value));
     return _parent->Add(conf);
 }
 
 Result ConfigFactory::Set(const uint32_t &value)
 {
-    std::shared_ptr<ConfigPrimitives> conf = std::make_shared<ConfigPrimitives>(_key);
+    std::shared_ptr<ConfigValue<uint32_t>> conf = std::make_shared<ConfigValue<uint32_t>>(_key);
     RETURN_ON_ERR(conf->Set(value));
     return _parent->Add(conf);
 }
 
 Result ConfigFactory::Set(const int64_t &value)
 {
-    std::shared_ptr<ConfigPrimitives> conf = std::make_shared<ConfigPrimitives>(_key);
+    std::shared_ptr<ConfigValue<int64_t>> conf = std::make_shared<ConfigValue<int64_t>>(_key);
     RETURN_ON_ERR(conf->Set(value));
     return _parent->Add(conf);
 }
 
 Result ConfigFactory::Set(const uint64_t &value)
 {
-    std::shared_ptr<ConfigPrimitives> conf = std::make_shared<ConfigPrimitives>(_key);
+    std::shared_ptr<ConfigValue<uint64_t>> conf = std::make_shared<ConfigValue<uint64_t>>(_key);
     RETURN_ON_ERR(conf->Set(value));
     return _parent->Add(conf);
 }
 
 Result ConfigFactory::Set(const bool &value)
 {
-    std::shared_ptr<ConfigPrimitives> conf = std::make_shared<ConfigPrimitives>(_key);
+    std::shared_ptr<ConfigValue<bool>> conf = std::make_shared<ConfigValue<bool>>(_key);
     RETURN_ON_ERR(conf->Set(value));
     return _parent->Add(conf);
 }
 
 Result ConfigFactory::Set(const float &value)
 {
-    std::shared_ptr<ConfigPrimitives> conf = std::make_shared<ConfigPrimitives>(_key);
+    std::shared_ptr<ConfigValue<float>> conf = std::make_shared<ConfigValue<float>>(_key);
     RETURN_ON_ERR(conf->Set(value));
     return _parent->Add(conf);
 }
 
 Result ConfigFactory::Set(const double &value)
 {
-    std::shared_ptr<ConfigPrimitives> conf = std::make_shared<ConfigPrimitives>(_key);
+    std::shared_ptr<ConfigValue<double>> conf = std::make_shared<ConfigValue<double>>(_key);
     RETURN_ON_ERR(conf->Set(value));
     return _parent->Add(conf);
 }
 
 Result ConfigFactory::Set(const long double &value)
 {
-    std::shared_ptr<ConfigPrimitives> conf = std::make_shared<ConfigPrimitives>(_key);
+    std::shared_ptr<ConfigValue<long double>> conf = std::make_shared<ConfigValue<long double>>(_key);
     RETURN_ON_ERR(conf->Set(value));
     return _parent->Add(conf);
 }

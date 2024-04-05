@@ -36,5 +36,7 @@ public:
         return result;
     }
 
+    ConfigTypes GetType() {return container->GetType();}
     virtual void Print(int depth) {container->Print(depth);}
+
 };

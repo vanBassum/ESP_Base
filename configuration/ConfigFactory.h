@@ -1,6 +1,5 @@
 #pragma once
 #include "IConfig.h"
-#include "ConfigString.h"
 
 class ConfigContainer;
 class ConfigFactory : public IConfig, public std::enable_shared_from_this<ConfigFactory>
@@ -14,6 +13,7 @@ public:
     Config operator[](const std::string &key) override;
     Result Add(std::shared_ptr<IConfig> value) override;
 
+    ConfigTypes GetType() override { return ConfigTypes::Factory; }
 
     virtual Result Populate(std::string &value) override;
     virtual Result Populate(int8_t &value) override ;

@@ -21,4 +21,18 @@ public:
         }
     }
 
+    ConfigTypes GetType() override { return ConfigTypes::Container; }
+
+    //    // Iterator support
+    //using iterator = typename std::vector<std::shared_ptr<IConfig>>::iterator;
+    //using const_iterator = typename std::vector<std::shared_ptr<IConfig>>::const_iterator;
+//
+    //iterator begin() { return _value.begin(); }
+    //iterator end() { return _value.end(); }
+//
+    //const_iterator begin() const { return _value.begin(); }
+    //const_iterator end() const { return _value.end(); }
 };
+
+
+
