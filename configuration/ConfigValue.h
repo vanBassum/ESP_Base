@@ -36,7 +36,7 @@ public:
 
     Result Populate(T &value) override
     {
-        _value = value;
+        value = _value;
         return Result::Ok;
     }
 

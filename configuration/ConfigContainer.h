@@ -23,15 +23,34 @@ public:
 
     ConfigTypes GetType() override { return ConfigTypes::Container; }
 
-    //    // Iterator support
-    //using iterator = typename std::vector<std::shared_ptr<IConfig>>::iterator;
-    //using const_iterator = typename std::vector<std::shared_ptr<IConfig>>::const_iterator;
-//
-    //iterator begin() { return _value.begin(); }
-    //iterator end() { return _value.end(); }
-//
-    //const_iterator begin() const { return _value.begin(); }
-    //const_iterator end() const { return _value.end(); }
+
+    // Custom iterator class to iterate over key-value pairs
+    class Iterator
+    {
+    private:
+        using IterType = typename std::vector<std::shared_ptr<IConfig>>::iterator;
+        IterType iter;
+
+    public:
+        explicit Iterator() : iter(IterType()) {}
+        explicit Iterator(const IterType& it) : iter(it) {}
+
+        Config operator*() const;
+
+        Iterator& operator++()
+        {
+            ++iter;
+            return *this;
+        }
+
+        bool operator!=(const Iterator& other) const
+        {
+            return iter != other.iter;
+        }
+    };
+
+    Iterator begin() { return Iterator(_value.begin()); }
+    Iterator end() { return Iterator(_value.end()); }
 };
 
 

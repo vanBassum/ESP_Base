@@ -27,3 +27,9 @@ Config ConfigContainer::operator[](const std::string &key)
     _factory = std::make_shared<ConfigFactory>(key, me);
     return Config(_factory);
 }
+
+Config ConfigContainer::Iterator::operator*() const
+{
+    std::shared_ptr<IConfig> cfg = *iter;
+    return Config(cfg);
+}

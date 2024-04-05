@@ -33,7 +33,6 @@ public:
     virtual Config operator[](const std::string& key);
     virtual Result Add(std::shared_ptr<IConfig> value)  { ESP_LOGE(TAG, "Not supported"); return Result::Error; }
 
-
     virtual Result Populate(std::string& value)         { ESP_LOGE(TAG, "Not supported"); return Result::Error; }
     virtual Result Populate(int8_t& value)              { ESP_LOGE(TAG, "Type mismatch"); return Result::Error; }
     virtual Result Populate(uint8_t& value)             { ESP_LOGE(TAG, "Type mismatch"); return Result::Error; }
