@@ -43,6 +43,7 @@ public:
     virtual Result Populate(uint32_t& value)            { ESP_LOGE(TAG, "Type mismatch"); return Result::Error; }
     virtual Result Populate(int64_t& value)             { ESP_LOGE(TAG, "Type mismatch"); return Result::Error; }
     virtual Result Populate(uint64_t& value)            { ESP_LOGE(TAG, "Type mismatch"); return Result::Error; }
+    virtual Result Populate(size_t& value)              { return Populate((uint32_t&)value); }
     virtual Result Populate(bool& value)                { ESP_LOGE(TAG, "Type mismatch"); return Result::Error; }
     virtual Result Populate(float& value)               { ESP_LOGE(TAG, "Type mismatch"); return Result::Error; }
     virtual Result Populate(double& value)              { ESP_LOGE(TAG, "Type mismatch"); return Result::Error; }
@@ -58,7 +59,8 @@ public:
     virtual Result Set(const int& value)                { return Set((const int32_t&)value); }
     virtual Result Set(const uint32_t& value)           { ESP_LOGE(TAG, "Type mismatch"); return Result::Error; }
     virtual Result Set(const int64_t& value)            { ESP_LOGE(TAG, "Type mismatch"); return Result::Error; }
-    virtual Result Set(const uint64_t& value)           { ESP_LOGE(TAG, "Type mismatch"); return Result::Error; }
+    virtual Result Set(const uint64_t& value)           { ESP_LOGE(TAG, "Type mismatch"); return Result::Error; }    
+    virtual Result Set(const size_t& value)             { return Set((const uint32_t&)value); }
     virtual Result Set(const bool& value)               { ESP_LOGE(TAG, "Type mismatch"); return Result::Error; }
     virtual Result Set(const float& value)              { ESP_LOGE(TAG, "Type mismatch"); return Result::Error; }
     virtual Result Set(const double& value)             { ESP_LOGE(TAG, "Type mismatch"); return Result::Error; }
