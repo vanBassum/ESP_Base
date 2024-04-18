@@ -76,9 +76,11 @@ private:
             return (PollResult)(PollResult::CHANGED | PollResult::ENDOFLIFE | PollResult::NOTIFY);
 
         case DeviceStatus::FatalError:
+            ESP_LOGE(TAG, "Device '%s' in fatal error state.", device->key);
             return (PollResult)(PollResult::CHANGED | PollResult::HALT | PollResult::NOTIFY);
 
         case DeviceStatus::Configuring:                 // Something was wrong in the device configuration
+            ESP_LOGE(TAG, "Configuration for device '%s' is invalid.", device->key);
             return (PollResult)(PollResult::CHANGED | PollResult::HALT | PollResult::NOTIFY);
 
         case DeviceStatus::Ready:
